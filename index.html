@@ -1,0 +1,2788 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Describing Athletes - Interactive English Module</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .vocab-badge-physical {
+      background-color: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .vocab-badge-physical:hover {
+      background-color: #bfdbfe;
+      transform: translateY(-1px);
+    }
+    .vocab-badge-trait {
+      background-color: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .vocab-badge-trait:hover {
+      background-color: #bbf7d0;
+      transform: translateY(-1px);
+    }
+    .tab-btn.active {
+      background-color: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.25);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Student Login & Identity Modal Overlay -->
+  <div id="student-login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 border border-slate-100 transform transition-all">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white text-3xl shadow-lg shadow-indigo-200 mb-3">
+          🏸
+        </div>
+        <span class="inline-block px-3 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold rounded-full uppercase tracking-wider mb-1">
+          Identitas Siswa
+        </span>
+        <h2 class="text-2xl font-black text-slate-900">Selamat Datang!</h2>
+        <p class="text-xs text-slate-500 mt-1">Silakan masukkan nama dan pilih kelas Anda untuk memulai modul pembelajaran.</p>
+      </div>
+
+      <form id="student-login-form" onsubmit="handleStudentLogin(event)" class="space-y-4">
+        <div>
+          <label for="student-name-input" class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
+            Nama Lengkap:
+          </label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-3 text-slate-400 text-sm">👤</span>
+            <input type="text" id="student-name-input" required placeholder="Contoh: Ahmad Rizky" class="w-full text-sm pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-800 transition">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
+            Pilih Kelas:
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="relative flex items-center justify-center p-3 rounded-xl border-2 border-slate-200 hover:border-indigo-400 bg-slate-50 cursor-pointer transition has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/70 has-[:checked]:text-indigo-900">
+              <input type="radio" name="student-class" value="XA" required class="sr-only">
+              <span class="font-extrabold text-sm flex items-center gap-1.5">
+                <span>🏫</span> Kelas XA
+              </span>
+            </label>
+
+            <label class="relative flex items-center justify-center p-3 rounded-xl border-2 border-slate-200 hover:border-indigo-400 bg-slate-50 cursor-pointer transition has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/70 has-[:checked]:text-indigo-900">
+              <input type="radio" name="student-class" value="XB" required class="sr-only">
+              <span class="font-extrabold text-sm flex items-center gap-1.5">
+                <span>🏫</span> Kelas XB
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <p id="student-login-error" class="text-xs font-semibold text-rose-600 hidden text-center pt-1"></p>
+
+        <button type="submit" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-xl text-sm font-bold shadow-md shadow-indigo-200 transition flex items-center justify-center gap-2 mt-2">
+          <span>Mulai Belajar Sekarang</span>
+          <span>🚀</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Top Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-indigo-200">
+            🏸
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-slate-900 leading-tight">Describing Athletes</h1>
+            <p class="text-xs text-slate-500 font-medium">English Learning Module • Physical Appearance & Personality</p>
+          </div>
+        </div>
+
+        <!-- Student Badge & Mobile Audio Control -->
+        <div class="flex items-center gap-2">
+          <div id="student-badge-mobile" class="flex md:hidden items-center gap-1.5 px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-900 rounded-lg text-xs font-semibold">
+            <span id="student-name-display-mobile">Siswa</span>
+            <span class="px-1.5 py-0.5 bg-indigo-600 text-white rounded text-[10px] font-bold" id="student-class-display-mobile">XA</span>
+          </div>
+          <button onclick="toggleSoundEffects()" id="btn-sound-toggle-mobile" class="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold md:hidden" title="Toggle Sound">
+            🔊
+          </button>
+        </div>
+      </div>
+
+      <!-- Nav Tabs & Desktop Badges -->
+      <div class="flex items-center gap-2 overflow-x-auto max-w-full pb-1 md:pb-0">
+        <!-- Desktop Student Identity Badge -->
+        <div id="student-badge-desktop" class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-950 rounded-xl text-xs font-semibold">
+          <span>👤 <span id="student-name-display-desktop" class="font-bold">Nama Siswa</span></span>
+          <span id="student-class-display-desktop" class="px-2 py-0.5 bg-indigo-600 text-white rounded-md text-[11px] font-bold">Kelas</span>
+          <button onclick="openStudentModal()" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold underline ml-1" title="Ubah Identitas">
+            Ganti
+          </button>
+        </div>
+
+        <!-- Teacher Spreadsheet Webhook Settings Button -->
+        <button onclick="openWebhookSettingsModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition" title="Konfigurasi URL Google Spreadsheet Webhook">
+          <span>📊</span>
+          <span class="hidden lg:inline">Spreadsheet Sync</span>
+        </button>
+
+        <nav class="flex items-center bg-slate-100 p-1 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap">
+          <button onclick="switchTab('vocab')" id="nav-vocab" class="tab-btn active px-3 py-1.5 rounded-lg transition">
+            1. Vocabulary Bank
+          </button>
+          <button onclick="switchTab('reading')" id="nav-reading" class="tab-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+            2. Guided Reading
+          </button>
+          <button onclick="switchTab('practice')" id="nav-practice" class="tab-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+            3. Interactive Quiz
+          </button>
+          <button onclick="switchTab('game')" id="nav-game" class="tab-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1">
+            4. Mini Game 🎮
+          </button>
+        </nav>
+
+        <button onclick="toggleSoundEffects()" id="btn-sound-toggle" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition" title="Mute/Unmute Classroom Sound Effects">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-label">SFX On</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 pointer-events-none transition-all duration-300 transform translate-y-8 opacity-0">
+    <div id="toast-box" class="bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 border border-slate-700">
+      <span id="toast-icon">✨</span>
+      <span id="toast-msg">Notification message</span>
+    </div>
+  </div>
+
+  <!-- Modal Pengaturan Webhook Google Spreadsheet -->
+  <div id="webhook-settings-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 hidden transition-opacity duration-300">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-7 border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl p-2 bg-emerald-100 rounded-xl">📊</span>
+          <div>
+            <h3 class="text-base sm:text-lg font-black text-slate-900 leading-snug">Sinkronisasi Google Spreadsheet</h3>
+            <p class="text-[11px] text-slate-500">Konfigurasi URL Webhook Google Apps Script</p>
+          </div>
+        </div>
+        <button onclick="closeWebhookSettingsModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 text-sm font-bold">✕</button>
+      </div>
+
+      <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-[11px] text-emerald-900 leading-relaxed">
+        Setiap kali siswa mengunci hasil <strong>Interactive Quiz</strong> atau <strong>Mini Game</strong>, nilainya langsung otomatis dikirim ke Google Spreadsheet Anda.
+      </div>
+
+      <div class="space-y-1.5">
+        <label for="webhook-url-input" class="block text-xs font-bold text-slate-700 uppercase tracking-wide">
+          Google Apps Script Webhook URL:
+        </label>
+        <input type="url" id="webhook-url-input" value="https://script.google.com/macros/s/AKfycbzIwLBOp3TN8GTfka2aWiNCvhj6iHaUbLMm7k5Gceg09OgzMefk7fq6ch4P6xt2MvRv/exec" placeholder="https://script.google.com/macros/s/.../exec" class="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+        <p class="text-[10px] text-slate-400">URL webhook Google Apps Script aktif terhubung ke spreadsheet Anda.</p>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <button onclick="testWebhookConnection()" id="btn-test-webhook" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+          <span>⚡</span>
+          <span>Tes Koneksi</span>
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeWebhookSettingsModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+            Tutup
+          </button>
+          <button onclick="saveWebhookSettings()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1">
+            <span>💾 Simpan URL</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow w-full">
+
+    <!-- ==================== TAB 1: VOCABULARY BANK ==================== -->
+    <section id="tab-vocab" class="space-y-6">
+      <!-- Intro Banner -->
+      <div class="bg-gradient-to-r from-blue-700 via-indigo-700 to-violet-800 rounded-2xl p-6 sm:p-7 text-white shadow-lg">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <span class="inline-block px-2.5 py-0.5 bg-white/20 rounded-full text-xs font-semibold tracking-wide uppercase">
+            Core Vocabulary Bank • Level A2–B1
+          </span>
+          <span class="text-xs text-indigo-200">Klik ikon 🔊 untuk mendengarkan pelafalan bahasa Inggris</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Describing Athletes: Physical vs Personality</h2>
+        <p class="text-xs sm:text-sm text-indigo-100 mt-2 max-w-2xl leading-relaxed">
+          Dalam teks deskriptif bertema atlet, terdapat dua dimensi utama: 
+          <strong class="underline decoration-indigo-300 underline-offset-2 text-white">Physical Appearance</strong> (fitur jasmani luar yang terlihat kasatmata) dan 
+          <strong class="underline decoration-indigo-300 underline-offset-2 text-white">Personality Characteristics</strong> (karakter mental, daya juang, dan watak perilaku).
+        </p>
+      </div>
+
+      <!-- Overview Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-blue-50/80 border border-blue-200 rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center gap-2 mb-2 text-blue-900 font-bold text-sm">
+            <span class="text-lg">👀</span>
+            <span>Physical Appearance (Ciri Fisik)</span>
+          </div>
+          <p class="text-xs text-blue-800 leading-relaxed">
+            Menjawab pertanyaan: <em>"What does he/she look like?"</em><br>
+            Pola kalimat utama:<br>
+            • <strong>Subject + is + Adjective</strong> (e.g. <em>He is tall and athletic.</em>)<br>
+            • <strong>Subject + has + Adjective + Noun</strong> (e.g. <em>She has tan skin and straight hair.</em>)
+          </p>
+        </div>
+
+        <div class="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center gap-2 mb-2 text-emerald-900 font-bold text-sm">
+            <span class="text-lg">🧠</span>
+            <span>Personality Characteristics (Karakter & Watak)</span>
+          </div>
+          <p class="text-xs text-emerald-800 leading-relaxed">
+            Menjawab pertanyaan: <em>"What is he/she like?"</em><br>
+            Pola kalimat utama:<br>
+            • <strong>Subject + is + Adjective</strong> (e.g. <em>Anthony is humble and hardworking.</em>)<br>
+            • <strong>Subject + always + Verb / behaves + Adverb</strong> (e.g. <em>He always plays with a sporting attitude.</em>)
+          </p>
+        </div>
+      </div>
+
+      <!-- Vocabulary Filter & Search Bar -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="relative w-full sm:w-72">
+          <input type="text" id="vocab-search" oninput="filterVocabDisplay()" placeholder="Cari kata atau arti (misal: brave, berotot)..." class="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+          <span class="absolute left-2.5 top-2.5 text-xs text-slate-400">🔍</span>
+        </div>
+        <div class="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+          <button onclick="setVocabFilter('all')" class="vocab-filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition whitespace-nowrap">Semua</button>
+          <button onclick="setVocabFilter('physical')" class="vocab-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Physical (30)</button>
+          <button onclick="setVocabFilter('personality')" class="vocab-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Personality (15)</button>
+        </div>
+      </div>
+
+      <!-- Section 1: Physical Appearance -->
+      <div id="section-physical-vocab" class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-5">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span class="text-blue-600">👤</span>
+              <span>1. Physical Appearance (5 Specific Categories • 30 Words)</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Semua kata dilengkapi arti bahasa Indonesia dan audio pelafalan.</p>
+          </div>
+          <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 hidden sm:inline-block">
+            Ciri Fisik
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="physical-categories-grid">
+          <!-- Height -->
+          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 space-y-2 vocab-cat-group">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1">
+              <span>📏</span> 1. Height
+            </h4>
+            <div class="space-y-1.5 text-xs">
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Tall" data-id="Tinggi" data-cat="Height">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Tall <button onclick="speakText('Tall')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Tinggi</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Medium-height" data-id="Sedang" data-cat="Height">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Medium-height <button onclick="speakText('Medium height')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Sedang</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Short" data-id="Pendek" data-cat="Height">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Short <button onclick="speakText('Short')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Pendek</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Petite" data-id="Mungil" data-cat="Height">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Petite <button onclick="speakText('Petite')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Mungil</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Towering" data-id="Sangat tinggi" data-cat="Height">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Towering <button onclick="speakText('Towering')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Sangat tinggi</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 space-y-2 vocab-cat-group">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1">
+              <span>💪</span> 2. Body
+            </h4>
+            <div class="space-y-1.5 text-xs">
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Athletic" data-id="Atletis" data-cat="Body">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Athletic <button onclick="speakText('Athletic')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Atletis</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Muscular" data-id="Berotot" data-cat="Body">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Muscular <button onclick="speakText('Muscular')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Berotot</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Slim" data-id="Ramping" data-cat="Body">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Slim <button onclick="speakText('Slim')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Ramping</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Lean" data-id="Kurus padat" data-cat="Body">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Lean <button onclick="speakText('Lean')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Kurus padat</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Fit" data-id="Bugar" data-cat="Body">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Fit <button onclick="speakText('Fit')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Bugar</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Sturdy" data-id="Kekar" data-cat="Body">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Sturdy <button onclick="speakText('Sturdy')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Kekar</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Strong" data-id="Kuat" data-cat="Body">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Strong <button onclick="speakText('Strong')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Kuat</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skin -->
+          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 space-y-2 vocab-cat-group">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1">
+              <span>🧴</span> 3. Skin
+            </h4>
+            <div class="space-y-1.5 text-xs">
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Tan" data-id="Sawo matang" data-cat="Skin">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Tan <button onclick="speakText('Tan')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Sawo matang</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Fair" data-id="Cerah" data-cat="Skin">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Fair <button onclick="speakText('Fair')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Cerah</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Dark" data-id="Gelap" data-cat="Skin">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Dark <button onclick="speakText('Dark')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Gelap</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Olive" data-id="Kuning langsat" data-cat="Skin">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Olive <button onclick="speakText('Olive')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Kuning langsat</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Flushed" data-id="Kemerahan" data-cat="Skin">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Flushed <button onclick="speakText('Flushed')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Kemerahan</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Sweaty" data-id="Berkeringat" data-cat="Skin">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Sweaty <button onclick="speakText('Sweaty')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Berkeringat</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hair -->
+          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 space-y-2 vocab-cat-group">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1">
+              <span>✂️</span> 4. Hair
+            </h4>
+            <div class="space-y-1.5 text-xs">
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Short" data-id="Pendek" data-cat="Hair">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Short <button onclick="speakText('Short')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Pendek</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Long" data-id="Panjang" data-cat="Hair">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Long <button onclick="speakText('Long')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Panjang</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Straight" data-id="Lurus" data-cat="Hair">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Straight <button onclick="speakText('Straight')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Lurus</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Wavy" data-id="Bergelombang" data-cat="Hair">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Wavy <button onclick="speakText('Wavy')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Bergelombang</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Curly" data-id="Keriting" data-cat="Hair">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Curly <button onclick="speakText('Curly')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Keriting</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Neat" data-id="Rapi" data-cat="Hair">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Neat <button onclick="speakText('Neat')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Rapi</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Tied" data-id="Diikat" data-cat="Hair">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Tied <button onclick="speakText('Tied')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Diikat</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Face -->
+          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 space-y-2 vocab-cat-group">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1">
+              <span>😊</span> 5. Face
+            </h4>
+            <div class="space-y-1.5 text-xs">
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Oval" data-id="Lonjong" data-cat="Face">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Oval <button onclick="speakText('Oval')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Lonjong</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Round" data-id="Bulat" data-cat="Face">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Round <button onclick="speakText('Round')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Bulat</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Square" data-id="Persegi" data-cat="Face">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Square <button onclick="speakText('Square')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Persegi</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Sharp" data-id="Tegas" data-cat="Face">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Sharp <button onclick="speakText('Sharp')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Tegas</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Bright" data-id="Cerah" data-cat="Face">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Bright <button onclick="speakText('Bright')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Cerah</span>
+              </div>
+              <div class="vocab-item p-1.5 bg-white rounded-lg border border-slate-200 flex justify-between items-center" data-en="Warm" data-id="Hangat" data-cat="Face">
+                <span class="font-bold text-slate-800 flex items-center gap-1">Warm <button onclick="speakText('Warm')" class="text-slate-400 hover:text-indigo-600 text-[11px]" title="Dengarkan">🔊</button></span>
+                <span class="text-slate-500 font-medium text-[11px]">Hangat</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Personality Characteristics -->
+      <div id="section-personality-vocab" class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-5">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span class="text-emerald-600">⭐</span>
+              <span>2. Personality Characteristics (15 Single-Word Adjectives)</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Kata sifat watak, determinasi mental, dan sportivitas atlet dalam bertanding.</p>
+          </div>
+          <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hidden sm:inline-block">
+            Sifat & Watak
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3" id="personality-categories-grid">
+          <!-- 15 Personality items -->
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Hardworking" data-id="Pekerja keras" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Hardworking</span>
+              <button onclick="speakText('Hardworking')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Pekerja keras</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Disciplined" data-id="Disiplin" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Disciplined</span>
+              <button onclick="speakText('Disciplined')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Disiplin</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Resilient" data-id="Pantang menyerah" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Resilient</span>
+              <button onclick="speakText('Resilient')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Pantang menyerah</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Humble" data-id="Rendah hati" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Humble</span>
+              <button onclick="speakText('Humble')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Rendah hati</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Focused" data-id="Fokus" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Focused</span>
+              <button onclick="speakText('Focused')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Fokus</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Calm" data-id="Tenang" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Calm</span>
+              <button onclick="speakText('Calm')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Tenang</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Sporting" data-id="Sportif" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Sporting</span>
+              <button onclick="speakText('Sporting')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Sportif</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Brave" data-id="Berani" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Brave</span>
+              <button onclick="speakText('Brave')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Berani</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Cooperative" data-id="Kooperatif" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Cooperative</span>
+              <button onclick="speakText('Cooperative')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Dapat bekerja sama</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Confident" data-id="Percaya diri" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Confident</span>
+              <button onclick="speakText('Confident')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Percaya diri</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Passionate" data-id="Penuh semangat" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Passionate</span>
+              <button onclick="speakText('Passionate')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Penuh semangat</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Cheerful" data-id="Ceria" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Cheerful</span>
+              <button onclick="speakText('Cheerful')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Ceria</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Patient" data-id="Sabar" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Patient</span>
+              <button onclick="speakText('Patient')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Sabar</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Determined" data-id="Gigih" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Determined</span>
+              <button onclick="speakText('Determined')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Gigih / Tekun</span>
+          </div>
+
+          <div class="vocab-item p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between" data-en="Energetic" data-id="Bertenaga" data-cat="Personality">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-950 text-xs sm:text-sm">Energetic</span>
+              <button onclick="speakText('Energetic')" class="text-emerald-600 hover:text-emerald-800 text-xs" title="Dengarkan">🔊</button>
+            </div>
+            <span class="text-[11px] text-emerald-700 mt-1 font-medium">Bertenaga</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: GUIDED READING ==================== -->
+    <section id="tab-reading" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-slate-100">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Interactive Reading Passages</h2>
+            <p class="text-xs text-slate-500">Klik kata sifat yang disorot untuk membaca arti dan mendengarkan pelafalannya!</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 text-xs font-semibold">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Blue = Physical</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Green = Personality</span>
+            <!-- Button Toggle Translation -->
+            <button onclick="toggleReadingTranslation()" id="btn-toggle-reading-trans" class="ml-1 sm:ml-2 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold transition flex items-center gap-1.5 shadow-sm">
+              <span>🇮🇩</span> <span id="reading-trans-label">Tampilkan Terjemahan</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Athlete Selector -->
+        <div class="flex gap-2 my-4">
+          <button id="btn-read-ginting" onclick="showReading('ginting')" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-indigo-600 text-white shadow-sm transition">
+            🏸 Anthony Sinisuka Ginting
+          </button>
+          <button id="btn-read-greysia" onclick="showReading('greysia')" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+            🥇 Greysia Polii
+          </button>
+        </div>
+
+        <!-- Passage 1: Anthony Ginting -->
+        <div id="passage-ginting" class="space-y-4 text-slate-700 leading-relaxed text-sm">
+          <!-- P1 -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider block">Paragraph 1: Identification</span>
+            <p>
+              Anthony Sinisuka Ginting is a world-famous Indonesian badminton player. He won a bronze medal at the Tokyo 2020 Olympics. Millions of badminton lovers admire him because he plays with high speed and lightning footwork on the court.
+            </p>
+            <!-- Indonesian translation block -->
+            <div class="reading-trans-box hidden p-3 rounded-xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 font-medium space-y-1">
+              <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1">
+                <span>🇮🇩</span> Terjemahan Paragraf 1 (Identifikasi):
+              </span>
+              <p class="italic text-slate-700 leading-relaxed">
+                Anthony Sinisuka Ginting adalah seorang pemain bulu tangkis Indonesia yang terkenal di dunia. Ia meraih medali perunggu pada Olimpiade Tokyo 2020. Jutaan pecinta bulu tangkis mengaguminya karena ia bermain dengan kecepatan tinggi dan pergerakan langkah kaki secepat kilat di lapangan.
+              </p>
+            </div>
+          </div>
+
+          <!-- P2 -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider block">Paragraph 2: Physical Appearance</span>
+            <p>
+              Anthony is a <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('medium-height', 'Physical (Height)', 'Tinggi sedang (sekitar 171 cm)')">medium-height</span> athlete with a very <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('lean', 'Physical (Body)', 'Kurus padat dan lincah')">lean</span>, <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('athletic', 'Physical (Body)', 'Atletis')">athletic</span>, and <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('fit', 'Physical (Body)', 'Bugar dan prima')">fit</span> body. He has natural <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('tan', 'Physical (Skin)', 'Sawo matang khas Indonesia')">tan</span> skin that often looks <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('flushed', 'Physical (Skin)', 'Kemerahan saat bertanding keras')">flushed</span> and <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('sweaty', 'Physical (Skin)', 'Berkeringat karena tempo cepat')">sweaty</span> during intense rallies. His hair is <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('short', 'Physical (Hair)', 'Pendek')">short</span>, <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('straight', 'Physical (Hair)', 'Lurus')">straight</span>, and cut <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('neat', 'Physical (Hair)', 'Rapi')">neat</span>. He has an <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('oval', 'Physical (Face)', 'Lonjong')">oval</span> face with <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('sharp', 'Physical (Face)', 'Tegas dan tajam saat fokus')">sharp</span> eyes, but he always shows a <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('warm', 'Physical (Face)', 'Hangat dan ramah')">warm</span> and <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('bright', 'Physical (Face)', 'Cerah ceria')">bright</span> smile to supporters.
+            </p>
+            <!-- Indonesian translation block -->
+            <div class="reading-trans-box hidden p-3 rounded-xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 font-medium space-y-1">
+              <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1">
+                <span>🇮🇩</span> Terjemahan Paragraf 2 (Ciri Fisik):
+              </span>
+              <p class="italic text-slate-700 leading-relaxed">
+                Anthony adalah atlet berpostur <em>tinggi sedang</em> dengan tubuh yang sangat <em>kurus padat</em>, <em>atletis</em>, dan <em>bugar</em>. Ia memiliki warna kulit <em>sawo matang</em> alami yang sering kali terlihat <em>kemerahan</em> dan <em>berkeringat</em> selama reli pertandingan yang sengit. Rambutnya <em>pendek</em>, <em>lurus</em>, dan dipotong <em>rapi</em>. Ia memiliki wajah <em>lonjong</em> dengan tatapan mata yang <em>tegas</em>, namun ia selalu menunjukkan senyuman yang <em>hangat</em> dan <em>cerah</em> kepada para pendukungnya.
+              </p>
+            </div>
+          </div>
+
+          <!-- P3 -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider block">Paragraph 3: Personality Characteristics</span>
+            <p>
+              Off the court, Anthony is well-known as a <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('humble', 'Personality', 'Rendah hati dan tidak tinggi hati')">humble</span> person. During intense matches, he remains exceptionally <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('calm', 'Personality', 'Tenang di bawah tekanan poin kritis')">calm</span> and <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('focused', 'Personality', 'Fokus dan konsentrasi penuh')">focused</span>. He is extremely <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('hardworking', 'Personality', 'Pekerja keras dalam porsi latihan')">hardworking</span> and <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('disciplined', 'Personality', 'Sangat berdisiplin tinggi')">disciplined</span>. When he is trailing behind on score, he is <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('resilient', 'Personality', 'Bangkit kembali dan tidak mudah menyerah')">resilient</span> and <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('determined', 'Personality', 'Bulat tekad untuk merebut kemenangan')">determined</span> to fight back. He always treats opponents with great <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('sporting', 'Personality', 'Sportif dan menghormati lawan')">sporting</span> spirit.
+            </p>
+            <!-- Indonesian translation block -->
+            <div class="reading-trans-box hidden p-3 rounded-xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 font-medium space-y-1">
+              <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1">
+                <span>🇮🇩</span> Terjemahan Paragraf 3 (Karakter / Watak):
+              </span>
+              <p class="italic text-slate-700 leading-relaxed">
+                Di luar lapangan, Anthony dikenal luas sebagai sosok yang <em>rendah hati</em>. Selama pertandingan-pertandingan yang menegangkan, ia tetap sangat <em>tenang</em> dan <em>fokus</em>. Ia sangat <em>pekerja keras</em> serta <em>berdisiplin</em> tinggi. Ketika tertinggal dalam perolehan skor, ia sangat <em>pantang menyerah</em> dan <em>bulat tekad</em> untuk bangkit melawan. Ia pun senantiasa memperlakukan lawan-lawannya dengan semangat jiwa <em>sportif</em> yang luar biasa.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Passage 2: Greysia Polii -->
+        <div id="passage-greysia" class="hidden space-y-4 text-slate-700 leading-relaxed text-sm">
+          <!-- P1 -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider block">Paragraph 1: Identification</span>
+            <p>
+              Greysia Polii is a legendary Indonesian badminton champion. Together with Apriyani Rahayu, she made history by winning the prestigious Olympic Gold Medal in women's doubles at Tokyo 2020.
+            </p>
+            <!-- Indonesian translation block -->
+            <div class="reading-trans-box hidden p-3 rounded-xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 font-medium space-y-1">
+              <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1">
+                <span>🇮🇩</span> Terjemahan Paragraf 1 (Identifikasi):
+              </span>
+              <p class="italic text-slate-700 leading-relaxed">
+                Greysia Polii adalah juara bulu tangkis legendaris asal Indonesia. Bersama dengan Apriyani Rahayu, ia mencatatkan sejarah dengan merebut Medali Emas Olimpiade ganda putri yang sangat prestisius di Tokyo 2020.
+              </p>
+            </div>
+          </div>
+
+          <!-- P2 -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider block">Paragraph 2: Physical Appearance</span>
+            <p>
+              Greysia has a <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('petite', 'Physical (Height)', 'Mungil namun sangat gesit')">petite</span> yet remarkably <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('strong', 'Physical (Body)', 'Kuat dan bertenaga')">strong</span>, <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('athletic', 'Physical (Body)', 'Atletis')">athletic</span>, and <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('muscular', 'Physical (Body)', 'Berotot kencang')">muscular</span> body built through decades of training. She has a healthy <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('fair', 'Physical (Skin)', 'Cerah dan berseri')">fair</span> skin tone. When playing, her <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('long', 'Physical (Hair)', 'Panjang')">long</span> hair is tightly <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('tied', 'Physical (Hair)', 'Diikat rapi ke belakang')">tied</span> into a ponytail. She has an inviting <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('round', 'Physical (Face)', 'Wajah bulat ramah')">round</span> face with an iconic <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('bright', 'Physical (Face)', 'Cerah bercahaya')">bright</span> and <span class="vocab-badge-physical px-1.5 py-0.5 rounded font-medium" onclick="explainWord('warm', 'Physical (Face)', 'Hangat dan bersahabat')">warm</span> smile.
+            </p>
+            <!-- Indonesian translation block -->
+            <div class="reading-trans-box hidden p-3 rounded-xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 font-medium space-y-1">
+              <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1">
+                <span>🇮🇩</span> Terjemahan Paragraf 2 (Ciri Fisik):
+              </span>
+              <p class="italic text-slate-700 leading-relaxed">
+                Greysia memiliki tubuh yang <em>mungil</em> namun luar biasa <em>kuat</em>, <em>atletis</em>, dan <em>berotot</em> yang terbentuk dari latihan selama berpuluh-puluh tahun. Ia memiliki warna kulit yang <em>cerah</em> dan sehat. Saat bertanding, rambutnya yang <em>panjang</em> selalu <em>diikat</em> kencang model kuncir kuda. Ia memiliki wajah <em>bulat</em> yang ramah disertai senyuman khas yang <em>cerah</em> dan <em>hangat</em>.
+              </p>
+            </div>
+          </div>
+
+          <!-- P3 -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider block">Paragraph 3: Personality Characteristics</span>
+            <p>
+              Greysia is admired for her <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('cheerful', 'Personality', 'Ceria dan menyebarkan energi optimis')">cheerful</span> and <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('energetic', 'Personality', 'Bertenaga tanpa kenal lelah')">energetic</span> personality. On court, she is exceptionally <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('cooperative', 'Personality', 'Dapat bekerja sama kompak dengan pasangan ganda')">cooperative</span> with her partner. Even when recovering from severe injuries, she remained extremely <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('patient', 'Personality', 'Sabar melewati masa sulit')">patient</span>, <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('brave', 'Personality', 'Berani menghadapi lawan tangguh')">brave</span>, and <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('resilient', 'Personality', 'Bangkit kembali pantang menyerah')">resilient</span>. Her <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('passionate', 'Personality', 'Penuh gairah dan cinta mendalam pada bulu tangkis')">passionate</span> heart and <span class="vocab-badge-trait px-1.5 py-0.5 rounded font-medium" onclick="explainWord('humble', 'Personality', 'Rendah hati kepada siapa pun')">humble</span> attitude make her a true sports legend.
+            </p>
+            <!-- Indonesian translation block -->
+            <div class="reading-trans-box hidden p-3 rounded-xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 font-medium space-y-1">
+              <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1">
+                <span>🇮🇩</span> Terjemahan Paragraf 3 (Karakter / Watak):
+              </span>
+              <p class="italic text-slate-700 leading-relaxed">
+                Greysia dikagumi berkat kepribadiannya yang <em>ceria</em> dan <em>bertenaga</em>. Di lapangan, ia luar biasa <em>kompak/kooperatif</em> bersama pasangannya. Bahkan saat harus pulih dari cedera parah, ia tetap sangat <em>sabar</em>, <em>berani</em>, dan <em>pantang menyerah</em>. Ketulusan hatinya yang <em>penuh semangat</em> serta sikapnya yang <em>rendah hati</em> menjadikannya seorang legenda olahraga sejati.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Word Info Popover Box -->
+        <div id="word-detail-box" class="hidden mt-4 p-4 rounded-xl bg-indigo-50 border border-indigo-200 transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span id="detail-badge" class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-200 text-indigo-800">Category</span>
+              <h4 id="detail-word" class="font-bold text-slate-900 text-base">Word</h4>
+              <button id="detail-speak-btn" class="p-1 rounded-lg hover:bg-indigo-200 text-indigo-700 text-sm" title="Dengarkan Audio">🔊</button>
+            </div>
+            <button onclick="closeWordDetail()" class="text-slate-400 hover:text-slate-600 text-sm font-bold">✕</button>
+          </div>
+          <p id="detail-meaning" class="text-xs sm:text-sm text-slate-700 mt-1.5 font-medium">Definition</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: INTERACTIVE QUIZ ==================== -->
+    <section id="tab-practice" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+        <div>
+          <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Evaluation Assessment</span>
+          <h2 class="text-xl font-bold text-slate-900">Adjective Classifier (45 Kosakata Atlet)</h2>
+          <p class="text-xs text-slate-500 mt-1">
+            Tentukan kategori yang tepat untuk setiap kata sifat: <strong>Physical Appearance</strong> atau <strong>Personality Characteristic</strong>. 
+            <strong class="text-rose-600">Perhatian: Setiap kata hanya bisa dijawab 1 kali. Jika salah memilih, sistem langsung menandainya sebagai salah dan melanjutkan pengerjaan!</strong>
+          </p>
+        </div>
+
+        <!-- Progress bar & Real-time Live Counters -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-xs font-bold text-slate-600">
+            <div class="flex items-center gap-2">
+              <span>Progress Pengerjaan:</span>
+              <span id="quiz-progress-text" class="text-indigo-600 font-extrabold">0 / 45 Selesai</span>
+            </div>
+            <div class="flex items-center gap-3 text-[11px]">
+              <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                Benar: <span id="quiz-live-correct">0</span>
+              </span>
+              <span class="text-rose-700 font-bold bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                Salah: <span id="quiz-live-wrong">0</span>
+              </span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+            <div id="quiz-progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Word Card Deck -->
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Kata yang Belum Dikerjakan:</span>
+            <span class="text-[11px] text-slate-400 font-medium">Klik kata untuk menentukan kategorinya</span>
+          </div>
+          <div id="unsorted-word-pool" class="flex flex-wrap gap-2 max-h-56 overflow-y-auto p-2 bg-white rounded-xl border border-slate-200">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- Classification Drop Targets -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Physical Column -->
+          <div class="bg-blue-50/50 rounded-2xl p-4 sm:p-5 border-2 border-dashed border-blue-300 flex flex-col min-h-[160px]">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-bold text-blue-900 flex items-center gap-1.5">
+                <span>👤</span> Physical Appearance (<span id="count-phys">0</span> Dijawab)
+              </h3>
+              <span class="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Height, Body, Skin, Hair, Face</span>
+            </div>
+            <div id="list-physical" class="flex flex-wrap gap-1.5 flex-grow content-start"></div>
+          </div>
+
+          <!-- Personality Column -->
+          <div class="bg-emerald-50/50 rounded-2xl p-4 sm:p-5 border-2 border-dashed border-emerald-300 flex flex-col min-h-[160px]">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-bold text-emerald-900 flex items-center gap-1.5">
+                <span>⭐</span> Personality Characteristics (<span id="count-pers">0</span> Dijawab)
+              </h3>
+              <span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Traits & Attitude</span>
+            </div>
+            <div id="list-personality" class="flex flex-wrap gap-1.5 flex-grow content-start"></div>
+          </div>
+        </div>
+
+        <!-- Lock & Submission Bar -->
+        <div id="quiz-submission-bar" class="p-4 bg-indigo-50/70 border border-indigo-200 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div>
+            <span class="text-xs sm:text-sm font-bold text-indigo-900 block">Kumpulkan & Kunci Hasil Kuis</span>
+            <span class="text-[11px] text-slate-500 font-medium">Pastikan Anda telah menyelesaikan seluruh 45 kata. Nilai hanya dapat disubmit 1 kali.</span>
+          </div>
+          <button id="btn-submit-quiz" onclick="finalizeQuizSubmission()" class="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+            <span>🔒 Kirim & Kunci Nilai Kuis</span>
+          </button>
+        </div>
+
+        <!-- Quiz Official Assessment Result Card -->
+        <div id="quiz-result-card" class="hidden rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50/90 via-white to-slate-50 p-6 sm:p-7 shadow-lg space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
+                  <span>🔒</span> Terkunci (1x Percobaan Selesai)
+                </span>
+                <span class="text-xs text-slate-500 font-medium" id="quiz-completion-time">22/09/2026</span>
+              </div>
+              <h3 class="text-xl font-black text-slate-900 mt-1">Laporan Hasil Penilaian Adjective Classifier</h3>
+              <p class="text-xs text-slate-500">Hasil pengerjaan kuis siswa telah tercatat dan tidak dapat diubah lagi.</p>
+            </div>
+            <div class="px-5 py-3 bg-white rounded-xl border border-indigo-100 text-right shadow-sm">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Nilai Akhir Kuis</span>
+              <span id="quiz-total-grade" class="text-3xl font-black text-indigo-600">0</span>
+              <span class="text-xs font-bold text-slate-400">/ 100</span>
+            </div>
+          </div>
+
+          <!-- Student & Score Breakdown Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Identitas Siswa</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="quiz-student-name">-</p>
+              <p class="text-indigo-600 font-bold mt-0.5" id="quiz-student-class">-</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Rincian Jawaban</span>
+              <p class="font-extrabold text-emerald-700 text-sm"><span id="quiz-result-correct-count">0</span> Benar</p>
+              <p class="text-rose-600 font-bold mt-0.5"><span id="quiz-result-wrong-count">0</span> Salah</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Status Kriteria</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="quiz-result-status">-</p>
+              <p class="text-slate-500 font-medium mt-0.5">45 Soal Klasifikasi</p>
+            </div>
+          </div>
+
+          <!-- Spreadsheet Sync Status Banner for Quiz -->
+          <div id="quiz-sync-status" class="p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span id="quiz-sync-icon">⏳</span>
+              <span id="quiz-sync-text" class="text-slate-700">Menyinkronkan hasil ke Google Spreadsheet...</span>
+            </div>
+            <button onclick="resendQuizToSpreadsheet()" id="quiz-btn-resync" class="hidden px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg text-[11px] text-slate-800 font-bold transition">
+              Kirim Ulang 🔁
+            </button>
+          </div>
+
+          <div class="p-3.5 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-xs flex items-center gap-2.5">
+            <span class="text-base">ℹ️</span>
+            <span class="font-medium">Anda telah menyelesaikan kuis ini sebanyak <strong>1 kali</strong>. Seluruh tombol telah dinonaktifkan secara otomatis demi kejujuran penilaian mandiri.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: MINI GAME ==================== -->
+    <section id="tab-game" class="hidden space-y-6">
+      <!-- Game Dashboard Banner -->
+      <div class="bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 rounded-2xl p-6 sm:p-7 text-white shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <span class="inline-block px-2.5 py-0.5 bg-white/20 rounded-full text-xs font-semibold tracking-wide uppercase mb-1.5">
+            Interactive Arcade • Level A2–B1
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Athlete Detective & Trait Blitz</h2>
+          <p class="text-xs sm:text-sm text-indigo-100 mt-1 max-w-xl">
+            Tebak kata sifat misterius atlet (Bagian 1) dan pacu analisismu dalam kuis kilat (Bagian 2). Setiap bagian memiliki <strong>skala nilai maksimal murni 100</strong> dengan penguncian mandiri!
+          </p>
+        </div>
+
+        <!-- Live Score Summary Cards (Max 100 Scale) -->
+        <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/20 self-stretch sm:self-auto justify-around sm:justify-start">
+          <div class="text-center sm:text-right">
+            <span class="text-[10px] uppercase font-bold tracking-wider text-indigo-200 block">Nilai Bagian 1</span>
+            <span class="text-2xl font-black text-amber-300"><span id="game-puzzle-score">0</span><span class="text-xs text-indigo-200 font-bold">/100</span></span>
+          </div>
+          <div class="w-px h-8 bg-white/20"></div>
+          <div class="text-center sm:text-left">
+            <span class="text-[10px] uppercase font-bold tracking-wider text-purple-200 block">Nilai Bagian 2</span>
+            <span class="text-2xl font-black text-emerald-300"><span id="game-blitz-score">0</span><span class="text-xs text-purple-200 font-bold">/100</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode Switcher Tabs with lock status indicator -->
+      <div class="flex border-b border-slate-200 text-xs sm:text-sm font-bold gap-4">
+        <button id="mode-btn-wordguess" onclick="switchGameMode('wordguess')" class="pb-2.5 px-2 border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-2">
+          <span>🔤 Bagian 1: Mystery Word Puzzle</span>
+          <span id="tab-badge-puzzle-locked" class="hidden text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full">🔒 Terkunci</span>
+        </button>
+        <button id="mode-btn-blitz" onclick="switchGameMode('blitz')" class="pb-2.5 px-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+          <span>⚡ Bagian 2: Trait Rapid Fire</span>
+          <span id="tab-badge-blitz-locked" class="hidden text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full">🔒 Terkunci</span>
+        </button>
+      </div>
+
+      <!-- MODE 1: MYSTERY WORD PUZZLE (BAGIAN 1) -->
+      <div id="game-mode-wordguess" class="space-y-6">
+        <!-- Live Counters & Progress for Puzzle -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex flex-wrap justify-between items-center text-xs font-bold text-slate-600 gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-indigo-600 font-extrabold uppercase">Progress Puzzle:</span>
+              <span id="puzzle-progress-text" class="text-slate-800 font-extrabold">0 / 10 Soal Selesai</span>
+            </div>
+            <div class="flex items-center gap-2.5 text-[11px]">
+              <span class="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                Benar: <span id="puzzle-live-correct">0</span>
+              </span>
+              <span class="text-rose-700 font-bold bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200">
+                Salah: <span id="puzzle-live-wrong">0</span>
+              </span>
+              <span class="text-indigo-700 font-bold bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+                Sisa: <span id="puzzle-live-remaining">10</span>
+              </span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div id="puzzle-progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Puzzle Main Board -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div class="flex flex-wrap justify-between items-center gap-2 pb-3 border-b border-slate-100">
+            <div>
+              <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Soal #<span id="puzzle-round-num">1</span> dari 10 Ronde</span>
+              <h3 class="text-xl font-bold text-slate-900">Tebak Kata Sifat Atlet (Mystery Word)</h3>
+              <p class="text-xs text-slate-500">Tebak huruf satu per satu. Jangan biarkan staminamu (6 hati) habis!</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="puzzle-category-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Physical
+              </span>
+              <span id="puzzle-round-status-pill" class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200">
+                Sedang Dikerjakan
+              </span>
+            </div>
+          </div>
+
+          <!-- Stamina / Heart Display -->
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-xs font-bold text-slate-600">Stamina Kesempatan Salah:</span>
+            <span id="puzzle-stamina" class="text-base sm:text-lg tracking-widest">❤️❤️❤️❤️❤️❤️</span>
+          </div>
+
+          <!-- Clue Banner with Indonesian Translation Helper -->
+          <div class="p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 text-center space-y-2">
+            <div class="flex items-center justify-center gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Clue Description (Petunjuk Soal)</span>
+              <button onclick="togglePuzzleTranslation()" id="btn-toggle-puzzle-trans" class="text-[11px] px-2 py-0.5 rounded-md bg-white border border-indigo-200 text-indigo-700 font-bold hover:bg-indigo-100 transition shadow-sm flex items-center gap-1" title="Klik untuk menampilkan / menyembunyikan arti">
+                <span>🇮🇩</span> <span id="puzzle-trans-btn-label">Bantuan Terjemahan</span>
+              </button>
+            </div>
+            <p id="puzzle-clue-text" class="text-xs sm:text-sm font-semibold text-slate-800 italic">"Loading clue..."</p>
+            <!-- Indonesian Translation Box -->
+            <div id="puzzle-clue-translation-box" class="hidden mt-2 p-2.5 rounded-lg bg-white/90 border border-indigo-200 text-xs text-indigo-900 font-medium">
+              <span class="font-bold text-indigo-700 block text-[10px] uppercase tracking-wide">Terjemahan Bahasa Indonesia:</span>
+              <p id="puzzle-clue-translation" class="mt-0.5 italic text-slate-700">"Memuat terjemahan..."</p>
+            </div>
+          </div>
+
+          <!-- Word Slots Container -->
+          <div id="puzzle-word-slots" class="flex flex-wrap justify-center gap-2 py-4"></div>
+
+          <!-- Virtual Keyboard -->
+          <div class="space-y-2">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block text-center">Tekan tombol huruf atau gunakan keyboard fisik laptop:</span>
+            <div id="puzzle-keyboard" class="grid grid-cols-7 sm:grid-cols-9 md:grid-cols-13 gap-1 sm:gap-1.5 max-w-2xl mx-auto"></div>
+          </div>
+
+          <!-- Feedback & Next Button -->
+          <div id="puzzle-feedback" class="hidden"></div>
+          <div id="puzzle-next-container" class="hidden flex justify-between items-center pt-2">
+            <span class="text-xs text-slate-500 font-medium" id="puzzle-next-hint">Lanjut ke kata selanjutnya...</span>
+            <button id="btn-next-puzzle" onclick="nextWordPuzzle()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition inline-flex items-center gap-2">
+              <span>Soal Berikutnya →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Lock Submission Bar for Puzzle (Bagian 1) -->
+        <div id="puzzle-submission-bar" class="p-4 bg-indigo-50 border border-indigo-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+          <div>
+            <span class="text-xs sm:text-sm font-bold text-indigo-950 block">Kunci & Kumpulkan Nilai Bagian 1 (Mystery Word Puzzle)</span>
+            <span class="text-[11px] text-slate-500 font-medium">Nilai dihitung murni: <strong>(Benar / 10) × 100</strong> (Maksimal 100 poin). Setelah dikunci, hasil tidak dapat diubah dan langsung disinkronkan ke Spreadsheet.</span>
+          </div>
+          <button id="btn-submit-puzzle" onclick="finalizePuzzleSubmission()" class="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+            <span>🔒 Kunci Nilai Bagian 1</span>
+          </button>
+        </div>
+
+        <!-- Official Assessment Result Card: Bagian 1 Puzzle -->
+        <div id="puzzle-result-card" class="hidden rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50/90 via-white to-slate-50 p-6 sm:p-7 shadow-lg space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
+                  <span>🔒</span> Terkunci (Bagian 1 Selesai)
+                </span>
+                <span class="text-xs text-slate-500 font-medium" id="puzzle-completion-time">22/09/2026</span>
+              </div>
+              <h3 class="text-xl font-black text-slate-900 mt-1">Laporan Hasil Penilaian Bagian 1: Mystery Word Puzzle</h3>
+              <p class="text-xs text-slate-500">Nilai resmi diperoleh berdasarkan ketepatan menebak 10 kosakata sifat atlet (Skala 0 - 100).</p>
+            </div>
+            <div class="px-5 py-3 bg-white rounded-xl border border-indigo-100 text-right shadow-sm">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Nilai Bagian 1</span>
+              <span id="puzzle-total-grade" class="text-3xl font-black text-indigo-600">0</span>
+              <span class="text-xs font-bold text-slate-400">/ 100</span>
+            </div>
+          </div>
+
+          <!-- Breakdown Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Identitas Siswa</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="puzzle-student-name">-</p>
+              <p class="text-indigo-600 font-bold mt-0.5" id="puzzle-student-class">-</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Hasil Jawaban</span>
+              <p class="font-extrabold text-emerald-700 text-sm"><span id="puzzle-result-correct">0</span> Benar (×10 poin)</p>
+              <p class="text-rose-600 font-bold mt-0.5"><span id="puzzle-result-wrong">0</span> Salah (Total: 10 Soal)</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Status Kriteria</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="puzzle-result-status">-</p>
+              <p class="text-indigo-700 font-medium mt-0.5">Nilai Maksimal: 100 Poin</p>
+            </div>
+          </div>
+
+          <!-- Spreadsheet Sync Status Banner for Puzzle -->
+          <div id="puzzle-sync-status" class="p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span id="puzzle-sync-icon">⏳</span>
+              <span id="puzzle-sync-text" class="text-slate-700">Menyinkronkan Bagian 1 ke Google Spreadsheet...</span>
+            </div>
+            <button onclick="resendPuzzleToSpreadsheet()" id="puzzle-btn-resync" class="hidden px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg text-[11px] text-slate-800 font-bold transition">
+              Kirim Ulang 🔁
+            </button>
+          </div>
+
+          <div class="p-3.5 bg-indigo-50/70 rounded-xl border border-indigo-200 text-indigo-900 text-xs flex items-center gap-2.5">
+            <span class="text-base">✅</span>
+            <span class="font-medium">Bagian 1 telah tersimpan permanen. Anda dapat berpindah ke <strong>Bagian 2: Trait Rapid Fire</strong> untuk mengerjakan kuis kilat!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODE 2: TRAIT RAPID FIRE (BAGIAN 2) -->
+      <div id="game-mode-blitz" class="hidden space-y-6">
+        <!-- Live Counters & Progress for Blitz -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex flex-wrap justify-between items-center text-xs font-bold text-slate-600 gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-purple-600 font-extrabold uppercase">Progress Rapid Fire:</span>
+              <span id="blitz-progress-text" class="text-slate-800 font-extrabold">0 / 8 Soal Dijawab</span>
+            </div>
+            <div class="flex items-center gap-2.5 text-[11px]">
+              <span class="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                Benar: <span id="blitz-live-correct">0</span>
+              </span>
+              <span class="text-rose-700 font-bold bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200">
+                Salah: <span id="blitz-live-wrong">0</span>
+              </span>
+              <span class="text-purple-700 font-bold bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200">
+                Sisa: <span id="blitz-live-remaining">8</span>
+              </span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div id="blitz-progress-bar" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+            <div>
+              <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Speed Adjective Challenge (Bagian 2)</span>
+              <h3 class="text-xl font-bold text-slate-900">Trait Rapid Fire</h3>
+              <p class="text-xs text-slate-500">Pilih kata sifat bahasa Inggris yang paling pas untuk situasi atlet berikut!</p>
+            </div>
+            <span id="blitz-counter-badge" class="text-xs font-bold px-3 py-1 bg-purple-50 text-purple-700 rounded-full border border-purple-200">
+              Soal 1 dari 8
+            </span>
+          </div>
+
+          <!-- Question Prompt -->
+          <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950 text-white shadow-md text-center space-y-3">
+            <div class="flex items-center justify-center gap-2">
+              <span class="text-[11px] font-bold text-indigo-300 uppercase tracking-widest">Athlete Situation</span>
+              <button onclick="toggleBlitzTranslation()" id="btn-toggle-blitz-trans" class="text-[11px] px-2.5 py-0.5 rounded-md bg-white/20 hover:bg-white/30 text-indigo-100 border border-white/20 font-bold transition shadow-sm flex items-center gap-1" title="Lihat terjemahan situasi atlet">
+                <span>🇮🇩</span> <span id="blitz-trans-btn-label">Bantuan Terjemahan</span>
+              </button>
+            </div>
+            <p id="blitz-prompt" class="text-base sm:text-lg font-bold leading-snug text-slate-100">
+              "Loading prompt..."
+            </p>
+            <!-- Indonesian Translation Box for Blitz -->
+            <div id="blitz-translation-box" class="hidden p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm text-indigo-100 font-medium">
+              <span class="font-bold text-amber-300 block text-[10px] uppercase tracking-wide mb-0.5">Arti Bahasa Indonesia:</span>
+              <p id="blitz-prompt-translation" class="italic">"Memuat terjemahan..."</p>
+            </div>
+          </div>
+
+          <!-- Choices -->
+          <div id="blitz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+
+          <!-- Feedback & Next -->
+          <div id="blitz-feedback" class="hidden"></div>
+          <div id="blitz-next-container" class="hidden flex justify-between items-center">
+            <span class="text-xs text-slate-500 font-medium" id="blitz-next-hint">Lanjut ke soal berikutnya...</span>
+            <button id="btn-next-blitz" onclick="nextBlitzQuestion()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition inline-flex items-center gap-2">
+              <span>Soal Berikutnya →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Lock Submission Bar for Blitz (Bagian 2) -->
+        <div id="blitz-submission-bar" class="p-4 bg-purple-50 border border-purple-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+          <div>
+            <span class="text-xs sm:text-sm font-bold text-purple-950 block">Kunci & Kumpulkan Nilai Bagian 2 (Trait Rapid Fire)</span>
+            <span class="text-[11px] text-slate-500 font-medium">Nilai dihitung murni: <strong>(Benar / 8) × 100</strong> (Maksimal 100 poin). Setelah dikunci, opsi dinonaktifkan dan nilai dikirim otomatis ke Spreadsheet.</span>
+          </div>
+          <button id="btn-submit-blitz" onclick="finalizeBlitzSubmission()" class="w-full sm:w-auto px-5 py-2.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+            <span>🔒 Kunci Nilai Bagian 2</span>
+          </button>
+        </div>
+
+        <!-- Official Assessment Result Card: Bagian 2 Blitz -->
+        <div id="blitz-result-card" class="hidden rounded-2xl border-2 border-purple-200 bg-gradient-to-br from-purple-50/90 via-white to-slate-50 p-6 sm:p-7 shadow-lg space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
+                  <span>🔒</span> Terkunci (Bagian 2 Selesai)
+                </span>
+                <span class="text-xs text-slate-500 font-medium" id="blitz-completion-time">22/09/2026</span>
+              </div>
+              <h3 class="text-xl font-black text-slate-900 mt-1">Laporan Hasil Penilaian Bagian 2: Trait Rapid Fire</h3>
+              <p class="text-xs text-slate-500">Nilai resmi diperoleh berdasarkan ketepatan menjawab 8 situasi karakter atlet (Skala 0 - 100).</p>
+            </div>
+            <div class="px-5 py-3 bg-white rounded-xl border border-purple-100 text-right shadow-sm">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Nilai Bagian 2</span>
+              <span id="blitz-total-grade" class="text-3xl font-black text-purple-600">0</span>
+              <span class="text-xs font-bold text-slate-400">/ 100</span>
+            </div>
+          </div>
+
+          <!-- Breakdown Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Identitas Siswa</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="blitz-student-name">-</p>
+              <p class="text-purple-600 font-bold mt-0.5" id="blitz-student-class">-</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Hasil Jawaban</span>
+              <p class="font-extrabold text-emerald-700 text-sm"><span id="blitz-result-correct">0</span> Benar (×12.5 poin)</p>
+              <p class="text-rose-600 font-bold mt-0.5"><span id="blitz-result-wrong">0</span> Salah (Total: 8 Soal)</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Status Kriteria</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="blitz-result-status">-</p>
+              <p class="text-purple-700 font-medium mt-0.5">Nilai Maksimal: 100 Poin</p>
+            </div>
+          </div>
+
+          <!-- Spreadsheet Sync Status Banner for Blitz -->
+          <div id="blitz-sync-status" class="p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span id="blitz-sync-icon">⏳</span>
+              <span id="blitz-sync-text" class="text-slate-700">Menyinkronkan Bagian 2 ke Google Spreadsheet...</span>
+            </div>
+            <button onclick="resendBlitzToSpreadsheet()" id="blitz-btn-resync" class="hidden px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg text-[11px] text-slate-800 font-bold transition">
+              Kirim Ulang 🔁
+            </button>
+          </div>
+
+          <div class="p-3.5 bg-purple-50 rounded-xl border border-purple-200 text-purple-900 text-xs flex items-center gap-2.5">
+            <span class="text-base">🏆</span>
+            <span class="font-medium">Bagian 2 telah diselesaikan dan dikunci secara mandiri demi kejujuran penilaian kuis.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center text-xs text-slate-500 font-medium">
+      Interactive English Module • Describing Athletes • Physical Appearance & Personality Traits
+    </div>
+  </footer>
+
+  <script>
+    // Student Identity State
+    let currentStudent = {
+      name: '',
+      studentClass: ''
+    };
+
+    // Webhook URL Configuration Google Apps Script
+    const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzIwLBOp3TN8GTfka2aWiNCvhj6iHaUbLMm7k5Gceg09OgzMefk7fq6ch4P6xt2MvRv/exec';
+    let activeWebhookUrl = localStorage.getItem('athlete_spreadsheet_webhook_url') || DEFAULT_WEBHOOK_URL;
+
+    function openWebhookSettingsModal() {
+      document.getElementById('webhook-url-input').value = activeWebhookUrl || DEFAULT_WEBHOOK_URL;
+      const modal = document.getElementById('webhook-settings-modal');
+      modal.classList.remove('hidden');
+    }
+
+    function closeWebhookSettingsModal() {
+      document.getElementById('webhook-settings-modal').classList.add('hidden');
+    }
+
+    function saveWebhookSettings() {
+      const url = document.getElementById('webhook-url-input').value.trim() || DEFAULT_WEBHOOK_URL;
+      activeWebhookUrl = url;
+      localStorage.setItem('athlete_spreadsheet_webhook_url', url);
+      closeWebhookSettingsModal();
+      showToast('URL Google Spreadsheet Webhook berhasil disimpan!', '📊');
+    }
+
+    async function testWebhookConnection() {
+      const url = document.getElementById('webhook-url-input').value.trim();
+      const btn = document.getElementById('btn-test-webhook');
+      if (!url) {
+        showToast('Masukkan URL Webhook terlebih dahulu.', '⚠️');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span><span>Menguji...</span>';
+
+      const testPayload = {
+        activityType: "Uji Koneksi Webhook",
+        studentName: "Guru / Admin",
+        studentClass: "Tes",
+        finalScore: 100,
+        details: "Koneksi Google Spreadsheet berhasil terhubung",
+        remarks: "Sistem Siap Digunakan",
+        completedAt: new Date().toLocaleString('id-ID')
+      };
+
+      try {
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testPayload)
+        });
+
+        showToast('Koneksi berhasil! Baris pengujian dikirim ke Spreadsheet.', '✅');
+      } catch (e) {
+        showToast('Gagal mengirim ke Webhook. Periksa URL Anda.', '❌');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>⚡</span><span>Tes Koneksi</span>';
+      }
+    }
+
+    async function postDataToSpreadsheet(payload, statusContainerId, iconId, textId, resendBtnId) {
+      const icon = document.getElementById(iconId);
+      const text = document.getElementById(textId);
+      const resendBtn = document.getElementById(resendBtnId);
+      const container = document.getElementById(statusContainerId);
+
+      if (!activeWebhookUrl) {
+        if (icon) icon.textContent = 'ℹ️';
+        if (text) text.innerHTML = '<span class="text-amber-700">Webhook belum disetel. Data tersimpan di perangkat lokal saja.</span>';
+        if (container) container.className = "p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs font-semibold flex items-center justify-between";
+        if (resendBtn) resendBtn.classList.remove('hidden');
+        return;
+      }
+
+      if (icon) icon.textContent = '⏳';
+      if (text) text.textContent = 'Mengirim hasil ke Google Spreadsheet...';
+      if (container) container.className = "p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold flex items-center justify-between";
+      if (resendBtn) resendBtn.classList.add('hidden');
+
+      try {
+        await fetch(activeWebhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (icon) icon.textContent = '✅';
+        if (text) text.innerHTML = '<span class="text-emerald-700 font-bold">Berhasil tersimpan ke Google Spreadsheet Guru!</span>';
+        if (container) container.className = "p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs font-semibold flex items-center justify-between";
+        if (resendBtn) resendBtn.classList.add('hidden');
+        showToast('Data tersinkronisasi ke Google Spreadsheet!', '📊');
+      } catch (err) {
+        if (icon) icon.textContent = '⚠️';
+        if (text) text.innerHTML = '<span class="text-rose-700">Gagal mengirim ke spreadsheet. Periksa koneksi internet.</span>';
+        if (container) container.className = "p-3 bg-rose-50 rounded-xl border border-rose-200 text-xs font-semibold flex items-center justify-between";
+        if (resendBtn) resendBtn.classList.remove('hidden');
+      }
+    }
+
+    let lastQuizData = null;
+    let lastPuzzleData = null;
+    let lastBlitzData = null;
+
+    function resendQuizToSpreadsheet() {
+      if (lastQuizData) {
+        const payload = {
+          activityType: "Interactive Quiz (Classifier)",
+          studentName: lastQuizData.studentName,
+          studentClass: `Kelas ${lastQuizData.studentClass}`,
+          finalScore: `${lastQuizData.totalGrade} / 100`,
+          details: `Benar: ${lastQuizData.correctCount}/45 kata, Salah: ${lastQuizData.wrongCount}/45 kata`,
+          remarks: lastQuizData.totalGrade >= 75 ? "Lulus Kompeten" : "Perlu Remedial",
+          completedAt: lastQuizData.completedAt
+        };
+        postDataToSpreadsheet(payload, 'quiz-sync-status', 'quiz-sync-icon', 'quiz-sync-text', 'quiz-btn-resync');
+      }
+    }
+
+    function resendPuzzleToSpreadsheet() {
+      if (lastPuzzleData) {
+        const payload = {
+          activityType: "Mini Game - Bagian 1 (Mystery Word Puzzle)",
+          studentName: lastPuzzleData.studentName,
+          studentClass: `Kelas ${lastPuzzleData.studentClass}`,
+          finalScore: `${lastPuzzleData.totalGrade} / 100`,
+          details: `Benar: ${lastPuzzleData.correctCount}/10 kata, Salah: ${lastPuzzleData.wrongCount}/10 kata`,
+          remarks: lastPuzzleData.totalGrade >= 70 ? "Lulus Kompeten (Tebak Kata)" : "Perlu Remedial",
+          completedAt: lastPuzzleData.completedAt
+        };
+        postDataToSpreadsheet(payload, 'puzzle-sync-status', 'puzzle-sync-icon', 'puzzle-sync-text', 'puzzle-btn-resync');
+      }
+    }
+
+    function resendBlitzToSpreadsheet() {
+      if (lastBlitzData) {
+        const payload = {
+          activityType: "Mini Game - Bagian 2 (Trait Rapid Fire)",
+          studentName: lastBlitzData.studentName,
+          studentClass: `Kelas ${lastBlitzData.studentClass}`,
+          finalScore: `${lastBlitzData.totalGrade} / 100`,
+          details: `Benar: ${lastBlitzData.correctCount}/8 soal, Salah: ${lastBlitzData.wrongCount}/8 soal`,
+          remarks: lastBlitzData.totalGrade >= 75 ? "Lulus Kompeten (Rapid Fire)" : "Perlu Remedial",
+          completedAt: lastBlitzData.completedAt
+        };
+        postDataToSpreadsheet(payload, 'blitz-sync-status', 'blitz-sync-icon', 'blitz-sync-text', 'blitz-btn-resync');
+      }
+    }
+
+    // Assessment Lock State
+    let isQuizLocked = false;
+    let isPuzzleLocked = false;
+    let isBlitzLocked = false;
+
+    function getStorageKey(type) {
+      const cleanName = (currentStudent.name || 'guest').toLowerCase().replace(/\s+/g, '_');
+      const cleanClass = (currentStudent.studentClass || 'x').toLowerCase();
+      return `athlete_mod_${type}_${cleanName}_${cleanClass}`;
+    }
+
+    function checkExistingSubmissions() {
+      if (!currentStudent.name || !currentStudent.studentClass) return;
+
+      // Check Quiz Submission
+      const savedQuiz = localStorage.getItem(getStorageKey('quiz'));
+      if (savedQuiz) {
+        try {
+          const quizData = JSON.parse(savedQuiz);
+          applyQuizLock(quizData);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      // Check Bagian 1 Puzzle Submission
+      const savedPuzzle = localStorage.getItem(getStorageKey('puzzle'));
+      if (savedPuzzle) {
+        try {
+          const puzzleData = JSON.parse(savedPuzzle);
+          applyPuzzleLock(puzzleData);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      // Check Bagian 2 Blitz Submission
+      const savedBlitz = localStorage.getItem(getStorageKey('blitz'));
+      if (savedBlitz) {
+        try {
+          const blitzData = JSON.parse(savedBlitz);
+          applyBlitzLock(blitzData);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    function handleStudentLogin(event) {
+      event.preventDefault();
+      const nameInput = document.getElementById('student-name-input').value.trim();
+      const selectedClass = document.querySelector('input[name="student-class"]:checked');
+      const errEl = document.getElementById('student-login-error');
+
+      if (!nameInput) {
+        errEl.textContent = 'Harap masukkan nama lengkap Anda.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (!selectedClass) {
+        errEl.textContent = 'Harap pilih salah satu kelas (XA atau XB).';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      errEl.classList.add('hidden');
+      currentStudent.name = nameInput;
+      currentStudent.studentClass = selectedClass.value;
+
+      // Update UI badges
+      document.getElementById('student-name-display-desktop').textContent = currentStudent.name;
+      document.getElementById('student-class-display-desktop').textContent = `Kelas ${currentStudent.studentClass}`;
+      document.getElementById('student-name-display-mobile').textContent = currentStudent.name.split(' ')[0];
+      document.getElementById('student-class-display-mobile').textContent = currentStudent.studentClass;
+
+      // Close modal
+      const modal = document.getElementById('student-login-modal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+
+      playSound('correct');
+      triggerConfetti();
+      showToast(`Selamat belajar, ${currentStudent.name} (${currentStudent.studentClass})!`, '👋');
+
+      // Check if this student has already submitted Quiz or Game parts
+      checkExistingSubmissions();
+    }
+
+    function openStudentModal() {
+      const modal = document.getElementById('student-login-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+      }, 10);
+    }
+
+    // Audio Context Synthesizer with Classroom Mute Capability
+    let isSoundEnabled = true;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx && AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function toggleSoundEffects() {
+      isSoundEnabled = !isSoundEnabled;
+      const icon = isSoundEnabled ? '🔊' : '🔇';
+      const label = isSoundEnabled ? 'SFX On' : 'SFX Off';
+      
+      const desktopIcon = document.getElementById('sound-icon');
+      const desktopLabel = document.getElementById('sound-label');
+      const mobileBtn = document.getElementById('btn-sound-toggle-mobile');
+
+      if (desktopIcon) desktopIcon.textContent = icon;
+      if (desktopLabel) desktopLabel.textContent = label;
+      if (mobileBtn) mobileBtn.textContent = icon;
+
+      showToast(`Sound Effects: ${label}`, icon);
+    }
+
+    function playSound(type) {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'correct') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (type === 'wrong') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(220, now); // A3
+          osc.frequency.exponentialRampToValueAtTime(150, now + 0.2);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(580, now);
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        }
+      } catch (err) {
+        // Fallback gracefully
+      }
+    }
+
+    // Text-to-Speech Engine
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        showToast('Browser does not support Text-to-Speech.', '⚠️');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.92;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Toast Notification helper
+    function showToast(message, icon = '✨') {
+      const container = document.getElementById('toast-container');
+      const msg = document.getElementById('toast-msg');
+      const ico = document.getElementById('toast-icon');
+      if (!container) return;
+      msg.textContent = message;
+      ico.textContent = icon;
+      container.classList.remove('translate-y-8', 'opacity-0');
+      setTimeout(() => {
+        container.classList.add('translate-y-8', 'opacity-0');
+      }, 2400);
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      playSound('click');
+      const tabs = ['vocab', 'reading', 'practice', 'game'];
+      tabs.forEach(t => {
+        const page = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`nav-${t}`);
+        if (page) page.classList.add('hidden');
+        if (btn) {
+          btn.classList.remove('active', 'bg-indigo-600', 'text-white');
+          btn.classList.add('text-slate-600');
+        }
+      });
+
+      const activePage = document.getElementById(`tab-${tabId}`);
+      const activeBtn = document.getElementById(`nav-${tabId}`);
+      if (activePage) activePage.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-indigo-600', 'text-white');
+        activeBtn.classList.remove('text-slate-600');
+      }
+
+      if (tabId === 'game') {
+        initGame();
+      }
+    }
+
+    // Tab 1 Vocab Filter
+    let currentVocabFilter = 'all';
+    function setVocabFilter(type) {
+      playSound('click');
+      currentVocabFilter = type;
+      document.querySelectorAll('.vocab-filter-btn').forEach(btn => {
+        btn.className = "vocab-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap";
+      });
+      event.target.className = "vocab-filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition whitespace-nowrap";
+
+      const physSection = document.getElementById('section-physical-vocab');
+      const persSection = document.getElementById('section-personality-vocab');
+
+      if (type === 'all') {
+        physSection.classList.remove('hidden');
+        persSection.classList.remove('hidden');
+      } else if (type === 'physical') {
+        physSection.classList.remove('hidden');
+        persSection.classList.add('hidden');
+      } else {
+        physSection.classList.add('hidden');
+        persSection.classList.remove('hidden');
+      }
+      filterVocabDisplay();
+    }
+
+    function filterVocabDisplay() {
+      const query = (document.getElementById('vocab-search').value || '').toLowerCase().trim();
+      const items = document.querySelectorAll('.vocab-item');
+
+      items.forEach(item => {
+        const en = item.getAttribute('data-en').toLowerCase();
+        const id = item.getAttribute('data-id').toLowerCase();
+        const matches = en.includes(query) || id.includes(query);
+
+        if (matches) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    }
+
+    // Tab 2 Guided Reading
+    let isReadingTranslationVisible = false;
+
+    function toggleReadingTranslation() {
+      playSound('click');
+      isReadingTranslationVisible = !isReadingTranslationVisible;
+      const transBoxes = document.querySelectorAll('.reading-trans-box');
+      const btnLabel = document.getElementById('reading-trans-label');
+      
+      transBoxes.forEach(box => {
+        if (isReadingTranslationVisible) {
+          box.classList.remove('hidden');
+        } else {
+          box.classList.add('hidden');
+        }
+      });
+
+      if (isReadingTranslationVisible) {
+        btnLabel.textContent = "Sembunyikan Terjemahan";
+        showToast("Terjemahan bahasa Indonesia ditampilkan", "🇮🇩");
+      } else {
+        btnLabel.textContent = "Tampilkan Terjemahan";
+        showToast("Terjemahan bahasa Indonesia disembunyikan", "📖");
+      }
+    }
+
+    function showReading(athlete) {
+      playSound('click');
+      const gintingPassage = document.getElementById('passage-ginting');
+      const greysiaPassage = document.getElementById('passage-greysia');
+      const btnG = document.getElementById('btn-read-ginting');
+      const btnGr = document.getElementById('btn-read-greysia');
+
+      if (athlete === 'ginting') {
+        gintingPassage.classList.remove('hidden');
+        greysiaPassage.classList.add('hidden');
+        btnG.className = "px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-indigo-600 text-white shadow-sm transition";
+        btnGr.className = "px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+      } else {
+        gintingPassage.classList.add('hidden');
+        greysiaPassage.classList.remove('hidden');
+        btnGr.className = "px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-indigo-600 text-white shadow-sm transition";
+        btnG.className = "px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+      }
+      closeWordDetail();
+    }
+
+    let activeReadingWord = '';
+    function explainWord(word, category, meaning) {
+      playSound('click');
+      activeReadingWord = word;
+      const box = document.getElementById('word-detail-box');
+      document.getElementById('detail-word').textContent = word.toUpperCase();
+      document.getElementById('detail-badge').textContent = category;
+      document.getElementById('detail-meaning').textContent = meaning;
+      document.getElementById('detail-speak-btn').onclick = () => speakText(word);
+      box.classList.remove('hidden');
+    }
+
+    function closeWordDetail() {
+      document.getElementById('word-detail-box').classList.add('hidden');
+    }
+
+    // Tab 3 Adjective Classifier & Single-Attempt Engine
+    const ALL_VOCAB = [
+      // 30 Physical
+      { word: "Tall", type: "physical" },
+      { word: "Medium-height", type: "physical" },
+      { word: "Short", type: "physical" },
+      { word: "Petite", type: "physical" },
+      { word: "Towering", type: "physical" },
+      { word: "Athletic", type: "physical" },
+      { word: "Muscular", type: "physical" },
+      { word: "Slim", type: "physical" },
+      { word: "Lean", type: "physical" },
+      { word: "Fit", type: "physical" },
+      { word: "Sturdy", type: "physical" },
+      { word: "Strong", type: "physical" },
+      { word: "Tan", type: "physical" },
+      { word: "Fair", type: "physical" },
+      { word: "Dark", type: "physical" },
+      { word: "Olive", type: "physical" },
+      { word: "Flushed", type: "physical" },
+      { word: "Sweaty", type: "physical" },
+      { word: "Long", type: "physical" },
+      { word: "Straight", type: "physical" },
+      { word: "Wavy", type: "physical" },
+      { word: "Curly", type: "physical" },
+      { word: "Neat", type: "physical" },
+      { word: "Tied", type: "physical" },
+      { word: "Oval", type: "physical" },
+      { word: "Round", type: "physical" },
+      { word: "Square", type: "physical" },
+      { word: "Sharp", type: "physical" },
+      { word: "Bright", type: "physical" },
+      { word: "Warm", type: "physical" },
+      // 15 Personality
+      { word: "Hardworking", type: "personality" },
+      { word: "Disciplined", type: "personality" },
+      { word: "Resilient", type: "personality" },
+      { word: "Humble", type: "personality" },
+      { word: "Focused", type: "personality" },
+      { word: "Calm", type: "personality" },
+      { word: "Sporting", type: "personality" },
+      { word: "Brave", type: "personality" },
+      { word: "Cooperative", type: "personality" },
+      { word: "Confident", type: "personality" },
+      { word: "Passionate", type: "personality" },
+      { word: "Cheerful", type: "personality" },
+      { word: "Patient", type: "personality" },
+      { word: "Determined", type: "personality" },
+      { word: "Energetic", type: "personality" }
+    ];
+
+    let sortedCount = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let physCount = 0;
+    let persCount = 0;
+
+    function initClassifier() {
+      const pool = document.getElementById('unsorted-word-pool');
+      pool.innerHTML = '';
+      document.getElementById('list-physical').innerHTML = '';
+      document.getElementById('list-personality').innerHTML = '';
+      sortedCount = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      physCount = 0;
+      persCount = 0;
+      updateClassifierCounters();
+
+      const shuffled = [...ALL_VOCAB].sort(() => Math.random() - 0.5);
+
+      shuffled.forEach((item, index) => {
+        const btn = document.createElement('button');
+        btn.id = `chip-${index}`;
+        btn.className = "px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-indigo-50 border border-slate-200 text-slate-800 text-xs font-semibold transition active:scale-95 flex items-center gap-1.5";
+        btn.innerHTML = `<span>${item.word}</span> <span class="text-[10px] text-slate-400">▼</span>`;
+        btn.onclick = (e) => showClassifyAction(item, btn, e);
+        pool.appendChild(btn);
+      });
+    }
+
+    function showClassifyAction(item, element, e) {
+      if (isQuizLocked) return;
+      playSound('click');
+      const existingMenu = document.getElementById('temp-classify-menu');
+      if (existingMenu) existingMenu.remove();
+
+      const menu = document.createElement('div');
+      menu.id = 'temp-classify-menu';
+      menu.className = "absolute z-30 bg-white border border-slate-300 rounded-xl shadow-xl p-2 flex flex-col gap-1 text-xs animate-in fade-in zoom-in duration-150";
+
+      const rect = element.getBoundingClientRect();
+      menu.style.top = `${window.scrollY + rect.bottom + 4}px`;
+      menu.style.left = `${Math.min(window.innerWidth - 220, window.scrollX + rect.left)}px`;
+
+      menu.innerHTML = `
+        <span class="text-[10px] font-bold text-slate-500 px-2 py-0.5 uppercase tracking-wider">Kategori "${item.word}":</span>
+        <button id="btn-choice-phys" class="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold text-left flex items-center gap-2">
+          <span>👤</span> Physical Appearance
+        </button>
+        <button id="btn-choice-pers" class="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-left flex items-center gap-2">
+          <span>⭐</span> Personality Trait
+        </button>
+      `;
+
+      document.body.appendChild(menu);
+
+      document.getElementById('btn-choice-phys').onclick = () => {
+        handleSingleAttemptClassification(item, element, 'physical');
+        menu.remove();
+      };
+      document.getElementById('btn-choice-pers').onclick = () => {
+        handleSingleAttemptClassification(item, element, 'personality');
+        menu.remove();
+      };
+
+      setTimeout(() => {
+        const closeMenu = (evt) => {
+          if (!menu.contains(evt.target) && evt.target !== element) {
+            menu.remove();
+            document.removeEventListener('click', closeMenu);
+          }
+        };
+        document.addEventListener('click', closeMenu);
+      }, 50);
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 75,
+          spread: 60,
+          origin: { y: 0.7 }
+        });
+      }
+    }
+
+    // Aturan 1x Coba per Kata: Benar atau Salah kata langsung dihilangkan dari antrean
+    function handleSingleAttemptClassification(item, element, chosenType) {
+      if (isQuizLocked) return;
+
+      element.remove();
+      sortedCount++;
+
+      const isCorrect = (chosenType === item.type);
+      const targetList = document.getElementById(chosenType === 'physical' ? 'list-physical' : 'list-personality');
+      const badge = document.createElement('span');
+
+      if (isCorrect) {
+        correctCount++;
+        playSound('correct');
+        badge.className = chosenType === 'physical'
+          ? "px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[11px] font-bold border border-blue-200 inline-flex items-center gap-1"
+          : "px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[11px] font-bold border border-emerald-200 inline-flex items-center gap-1";
+        badge.innerHTML = `<span>✓ ${item.word}</span> <button onclick="speakText('${item.word}')" class="text-[10px] opacity-70 hover:opacity-100">🔊</button>`;
+        showToast(`Tepat! "${item.word}" = ${item.type === 'physical' ? 'Physical' : 'Personality'}.`, '✅');
+      } else {
+        wrongCount++;
+        playSound('wrong');
+        badge.className = "px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 text-[11px] font-bold border border-rose-300 inline-flex items-center gap-1 line-through decoration-rose-500";
+        badge.innerHTML = `<span>✗ ${item.word}</span> <button onclick="speakText('${item.word}')" class="text-[10px] opacity-70 hover:opacity-100">🔊</button>`;
+        showToast(`Salah! "${item.word}" seharusnya ${item.type === 'physical' ? 'Physical' : 'Personality'}.`, '❌');
+      }
+
+      targetList.appendChild(badge);
+
+      if (chosenType === 'physical') physCount++;
+      else persCount++;
+
+      updateClassifierCounters();
+
+      if (sortedCount === ALL_VOCAB.length) {
+        showToast('Seluruh 45 kosakata telah dikerjakan! Silakan kumpulkan hasil Anda.', '📋');
+      }
+    }
+
+    function updateClassifierCounters() {
+      document.getElementById('count-phys').textContent = physCount;
+      document.getElementById('count-pers').textContent = persCount;
+      document.getElementById('quiz-progress-text').textContent = `${sortedCount} / ${ALL_VOCAB.length} Selesai`;
+      document.getElementById('quiz-live-correct').textContent = correctCount;
+      document.getElementById('quiz-live-wrong').textContent = wrongCount;
+
+      const pct = (sortedCount / ALL_VOCAB.length) * 100;
+      document.getElementById('quiz-progress-bar').style.width = `${pct}%`;
+    }
+
+    function finalizeQuizSubmission() {
+      if (isQuizLocked) {
+        showToast('Kuis sudah pernah dikumpulkan dan terkunci!', '🔒');
+        return;
+      }
+
+      if (!currentStudent.name || !currentStudent.studentClass) {
+        showToast('Harap isi identitas nama dan kelas terlebih dahulu.', '⚠️');
+        openStudentModal();
+        return;
+      }
+
+      if (sortedCount < ALL_VOCAB.length) {
+        if (!confirm(`Anda baru mengerjakan ${sortedCount} dari 45 kata. Kata yang belum dijawab akan dihitung salah. Lanjutkan penguncian nilai?`)) {
+          return;
+        }
+        wrongCount += (ALL_VOCAB.length - sortedCount);
+        sortedCount = ALL_VOCAB.length;
+        updateClassifierCounters();
+      }
+
+      // Rumus Penilaian Murni: (Benar / 45) * 100
+      const totalGrade = Math.round((correctCount / ALL_VOCAB.length) * 100);
+
+      const dateStr = new Date().toLocaleString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const quizData = {
+        studentName: currentStudent.name,
+        studentClass: currentStudent.studentClass,
+        correctCount: correctCount,
+        wrongCount: wrongCount,
+        totalGrade: totalGrade,
+        completedAt: dateStr
+      };
+
+      lastQuizData = quizData;
+
+      localStorage.setItem(getStorageKey('quiz'), JSON.stringify(quizData));
+      applyQuizLock(quizData);
+
+      // Post to Spreadsheet
+      const spreadsheetPayload = {
+        activityType: "Interactive Quiz (Classifier)",
+        studentName: currentStudent.name,
+        studentClass: `Kelas ${currentStudent.studentClass}`,
+        finalScore: `${totalGrade} / 100`,
+        details: `Benar: ${correctCount}/45 kata, Salah: ${wrongCount}/45 kata`,
+        remarks: totalGrade >= 75 ? "Lulus Kompeten" : "Perlu Remedial",
+        completedAt: dateStr
+      };
+      postDataToSpreadsheet(spreadsheetPayload, 'quiz-sync-status', 'quiz-sync-icon', 'quiz-sync-text', 'quiz-btn-resync');
+
+      playSound('correct');
+      triggerConfetti();
+      showToast(`Kuis selesai! Nilai Akhir: ${totalGrade}/100`, '🏆');
+    }
+
+    function applyQuizLock(quizData) {
+      isQuizLocked = true;
+      lastQuizData = quizData;
+
+      // Disable pool buttons
+      document.querySelectorAll('#unsorted-word-pool button').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('opacity-40', 'cursor-not-allowed');
+      });
+
+      // Hide submission bar
+      const subBar = document.getElementById('quiz-submission-bar');
+      if (subBar) subBar.classList.add('hidden');
+
+      // Show result card
+      const card = document.getElementById('quiz-result-card');
+      if (card) {
+        card.classList.remove('hidden');
+        document.getElementById('quiz-completion-time').textContent = quizData.completedAt || '';
+        document.getElementById('quiz-total-grade').textContent = quizData.totalGrade;
+        document.getElementById('quiz-student-name').textContent = quizData.studentName;
+        document.getElementById('quiz-student-class').textContent = `Kelas ${quizData.studentClass}`;
+        document.getElementById('quiz-result-correct-count').textContent = `${quizData.correctCount} Kata`;
+        document.getElementById('quiz-result-wrong-count').textContent = `${quizData.wrongCount} Kata`;
+        document.getElementById('quiz-result-status').textContent = quizData.totalGrade >= 75 ? "Lulus Kompeten ⭐" : "Perlu Remedial 📖";
+      }
+    }
+
+    // Tab 4 Mini Game State & Data (Scale: 0 - 100)
+    let puzzleScore = 0; // max 100
+    let blitzScore = 0;  // max 100
+
+    // --- Bagian 1: Puzzle State ---
+    let puzzleIndex = 0;
+    let puzzleMistakes = 0;
+    const MAX_MISTAKES = 6;
+    let guessedLetters = new Set();
+    let isPuzzleResolved = false;
+
+    // Track results per puzzle question (array of true/false/null)
+    const PUZZLE_WORDS = [
+      {
+        word: "MUSCULAR",
+        category: "Physical (Body)",
+        clue: "Having well-developed, strong muscles built through intense weightlifting and gym workouts.",
+        clue_id: "Memiliki otot yang kekar dan berkembang baik dari latihan angkat beban serta gym intensif."
+      },
+      {
+        word: "RESILIENT",
+        category: "Personality",
+        clue: "Able to recover quickly from setbacks, injury, or losing points; never gives up under intense pressure.",
+        clue_id: "Mampu bangkit kembali dengan cepat dari kekalahan, cedera, atau ketertinggalan poin; pantang menyerah di bawah tekanan."
+      },
+      {
+        word: "TOWERING",
+        category: "Physical (Height)",
+        clue: "Extremely tall, standing noticeably higher than other athletes on the field or court.",
+        clue_id: "Sangat tinggi, berdiri jauh lebih menjulang daripada atlet-atlet lain di lapangan."
+      },
+      {
+        word: "FLUSHED",
+        category: "Physical (Skin)",
+        clue: "Reddish appearance of the face and skin caused by exhausting exertion, heat, and physical effort.",
+        clue_id: "Tampilan rona wajah dan kulit yang kemerahan akibat aktivitas fisik berat, hawa panas, dan kelelahan."
+      },
+      {
+        word: "DISCIPLINED",
+        category: "Personality",
+        clue: "Strictly following daily practice schedules, sleeping hours, and sports nutrition plans without cheating.",
+        clue_id: "Disiplin ketat mematuhi jadwal latihan harian, jam istirahat tidur, dan pola makan bernutrisi tanpa curang."
+      },
+      {
+        word: "STRAIGHT",
+        category: "Physical (Hair)",
+        clue: "Hair type that does not curl, wave, or bend, lying smooth and neat.",
+        clue_id: "Jenis rambut lurus yang tidak keriting atau bergelombang, tersisir rapi dan halus."
+      },
+      {
+        word: "COOPERATIVE",
+        category: "Personality",
+        clue: "Working harmoniously and effectively with doubles partners or teammates to achieve team victory.",
+        clue_id: "Mampu bekerja sama secara selaras dan kompak dengan pasangan ganda atau rekan setim demi kemenangan bersama."
+      },
+      {
+        word: "ATHLETIC",
+        category: "Physical (Body)",
+        clue: "Physically active, robust, and in prime shape for fast-paced competitive matches.",
+        clue_id: "Kondisi fisik aktif, bugar, kekar atletis, dan prima untuk pertandingan kompetitif bertempo cepat."
+      },
+      {
+        word: "HUMBLE",
+        category: "Personality",
+        clue: "Modest and grounded, never showing off or boasting even after winning an Olympic Gold Medal.",
+        clue_id: "Rendah hati dan tidak sombong, tidak pernah pamer meski telah memenangkan medali emas Olimpiade."
+      },
+      {
+        word: "SWEATY",
+        category: "Physical (Skin)",
+        clue: "Moist with perspiration after a fast, tiring sports rally under hot stadium lights.",
+        clue_id: "Basah kuyup berkeringat setelah reli pertandingan yang cepat dan melelahkan di bawah lampu lapangan."
+      }
+    ];
+
+    let puzzleResults = new Array(PUZZLE_WORDS.length).fill(null); // null, true, false
+
+    // --- Bagian 2: Blitz State ---
+    const BLITZ_QUESTIONS = [
+      {
+        prompt: "An athlete who trains every single day, never skips morning drills, and puts 100% effort into each workout.",
+        prompt_id: "Seorang atlet yang berlatih setiap hari tanpa pernah bolos latihan pagi, serta selalu mengerahkan usaha 100% di tiap sesi.",
+        options: [
+          { en: "Hardworking", id: "Pekerja keras" },
+          { en: "Petite", id: "Mungil" },
+          { en: "Flushed", id: "Kemerahan" },
+          { en: "Curly", id: "Keriting" }
+        ],
+        correct: "Hardworking"
+      },
+      {
+        prompt: "An athlete who maintains complete peace of mind and never panics, even when the score is tied in the final set.",
+        prompt_id: "Atlet yang tetap memiliki ketenangan pikiran dan tidak panik sama sekali, bahkan saat skor imbang di gim penentuan.",
+        options: [
+          { en: "Calm", id: "Tenang" },
+          { en: "Muscular", id: "Berotot" },
+          { en: "Towering", id: "Sangat tinggi" },
+          { en: "Wavy", id: "Bergelombang" }
+        ],
+        correct: "Calm"
+      },
+      {
+        prompt: "A basketball player whose height is remarkably above average, standing like a giant beside defenders.",
+        prompt_id: "Pemain basket yang tinggi badannya jauh di atas rata-rata, tampak menjulang tinggi bagaikan raksasa di dekat pemain bertahan.",
+        options: [
+          { en: "Towering", id: "Sangat tinggi/menjulang" },
+          { en: "Sporting", id: "Sportif" },
+          { en: "Humble", id: "Rendah hati" },
+          { en: "Patient", id: "Sabar" }
+        ],
+        correct: "Towering"
+      },
+      {
+        prompt: "A competitor who obeys the referee, plays with integrity, and shakes hands warmly with opponents win or lose.",
+        prompt_id: "Peserta yang mematuhi wasit, bermain jujur, dan bersalaman hangat dengan lawan baik saat menang maupun kalah.",
+        options: [
+          { en: "Sporting", id: "Sportif" },
+          { en: "Lean", id: "Kurus padat" },
+          { en: "Dark", id: "Gelap" },
+          { en: "Short", id: "Pendek" }
+        ],
+        correct: "Sporting"
+      },
+      {
+        prompt: "An athlete who quickly bounces back with greater courage after losing the opening set.",
+        prompt_id: "Atlet yang bangkit kembali dengan cepat dan penuh keberanian setelah menelan kekalahan di gim pertama.",
+        options: [
+          { en: "Resilient", id: "Pantang menyerah" },
+          { en: "Oval", id: "Lonjong" },
+          { en: "Slim", id: "Ramping" },
+          { en: "Fair", id: "Cerah" }
+        ],
+        correct: "Resilient"
+      },
+      {
+        prompt: "Skin that turns noticeably red and heated during high-intensity training under direct sunshine.",
+        prompt_id: "Kulit yang berubah merah jelas dan terasa panas selama latihan fisik berintensitas tinggi di bawah terik matahari.",
+        options: [
+          { en: "Flushed", id: "Kemerahan" },
+          { en: "Brave", id: "Berani" },
+          { en: "Disciplined", id: "Disiplin" },
+          { en: "Cooperative", id: "Dapat bekerja sama" }
+        ],
+        correct: "Flushed"
+      },
+      {
+        prompt: "A badminton doubles athlete who communicates flawlessly with their partner to cover the court.",
+        prompt_id: "Atlet bulu tangkis ganda yang berkomunikasi sangat kompak dengan rekannya untuk menutup area lapangan.",
+        options: [
+          { en: "Cooperative", id: "Kooperatif / kompak" },
+          { en: "Square", id: "Persegi" },
+          { en: "Sturdy", id: "Kekar" },
+          { en: "Straight", id: "Lurus" }
+        ],
+        correct: "Cooperative"
+      },
+      {
+        prompt: "A runner who is relatively small in stature and light, yet astonishingly fast on the track.",
+        prompt_id: "Pelari yang postur tubuhnya relatif mungil dan ringan, tetapi luar biasa kencang larinya di lintasan lari.",
+        options: [
+          { en: "Petite", id: "Mungil" },
+          { en: "Confident", id: "Percaya diri" },
+          { en: "Passionate", id: "Penuh semangat" },
+          { en: "Determined", id: "Bulat tekad" }
+        ],
+        correct: "Petite"
+      }
+    ];
+
+    let blitzIndex = 0;
+    let blitzResults = new Array(BLITZ_QUESTIONS.length).fill(null); // null, true, false
+
+    function initGame() {
+      updateGameHeader();
+      loadWordPuzzle();
+      loadBlitzQuestion();
+      updatePuzzleLiveStats();
+      updateBlitzLiveStats();
+    }
+
+    function updateGameHeader() {
+      // Calculate current live score out of 100 based on correct count
+      const puzzleCorrect = puzzleResults.filter(r => r === true).length;
+      puzzleScore = Math.round((puzzleCorrect / PUZZLE_WORDS.length) * 100);
+      document.getElementById('game-puzzle-score').textContent = puzzleScore;
+
+      const blitzCorrect = blitzResults.filter(r => r === true).length;
+      blitzScore = Math.round((blitzCorrect / BLITZ_QUESTIONS.length) * 100);
+      document.getElementById('game-blitz-score').textContent = blitzScore;
+    }
+
+    function switchGameMode(mode) {
+      playSound('click');
+      const wordSec = document.getElementById('game-mode-wordguess');
+      const blitzSec = document.getElementById('game-mode-blitz');
+      const btnWord = document.getElementById('mode-btn-wordguess');
+      const btnBlitz = document.getElementById('mode-btn-blitz');
+
+      if (mode === 'wordguess') {
+        wordSec.classList.remove('hidden');
+        blitzSec.classList.add('hidden');
+        btnWord.className = "pb-2.5 px-2 border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-2";
+        btnBlitz.className = "pb-2.5 px-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-2";
+      } else {
+        wordSec.classList.add('hidden');
+        blitzSec.classList.remove('hidden');
+        btnBlitz.className = "pb-2.5 px-2 border-b-2 border-purple-600 text-purple-600 transition flex items-center gap-2";
+        btnWord.className = "pb-2.5 px-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-2";
+      }
+    }
+
+    // ==================== LOGIKA BAGIAN 1: PUZZLE ====================
+    function updatePuzzleLiveStats() {
+      const correct = puzzleResults.filter(r => r === true).length;
+      const wrong = puzzleResults.filter(r => r === false).length;
+      const answered = correct + wrong;
+      const remaining = PUZZLE_WORDS.length - answered;
+
+      document.getElementById('puzzle-live-correct').textContent = correct;
+      document.getElementById('puzzle-live-wrong').textContent = wrong;
+      document.getElementById('puzzle-live-remaining').textContent = remaining;
+      document.getElementById('puzzle-progress-text').textContent = `${answered} / ${PUZZLE_WORDS.length} Soal Selesai`;
+
+      const pct = (answered / PUZZLE_WORDS.length) * 100;
+      document.getElementById('puzzle-progress-bar').style.width = `${pct}%`;
+
+      updateGameHeader();
+    }
+
+    function togglePuzzleTranslation() {
+      playSound('click');
+      const box = document.getElementById('puzzle-clue-translation-box');
+      const label = document.getElementById('puzzle-trans-btn-label');
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        label.textContent = "Tutup Terjemahan";
+      } else {
+        box.classList.add('hidden');
+        label.textContent = "Bantuan Terjemahan";
+      }
+    }
+
+    function loadWordPuzzle() {
+      if (puzzleIndex >= PUZZLE_WORDS.length) {
+        puzzleIndex = 0;
+      }
+      const current = PUZZLE_WORDS[puzzleIndex];
+      guessedLetters.clear();
+      puzzleMistakes = 0;
+      isPuzzleResolved = false;
+
+      document.getElementById('puzzle-round-num').textContent = puzzleIndex + 1;
+      document.getElementById('puzzle-category-badge').textContent = current.category;
+      document.getElementById('puzzle-clue-text').textContent = `"${current.clue}"`;
+      document.getElementById('puzzle-clue-translation').textContent = `"${current.clue_id}"`;
+
+      const pill = document.getElementById('puzzle-round-status-pill');
+      if (puzzleResults[puzzleIndex] === true) {
+        pill.textContent = "Telah Dijawab: Benar ✓ (+10 Poin)";
+        pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300";
+      } else if (puzzleResults[puzzleIndex] === false) {
+        pill.textContent = "Telah Dijawab: Salah ✗ (0 Poin)";
+        pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-rose-300";
+      } else {
+        pill.textContent = "Sedang Dikerjakan";
+        pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200";
+      }
+
+      document.getElementById('puzzle-clue-translation-box').classList.add('hidden');
+      document.getElementById('puzzle-trans-btn-label').textContent = "Bantuan Terjemahan";
+
+      document.getElementById('puzzle-feedback').classList.add('hidden');
+      document.getElementById('puzzle-next-container').classList.add('hidden');
+
+      updateStaminaDisplay();
+      renderWordSlots();
+      renderKeyboard();
+
+      if (isPuzzleLocked || puzzleResults[puzzleIndex] !== null) {
+        isPuzzleResolved = true;
+        disablePuzzleInputs();
+      }
+    }
+
+    function updateStaminaDisplay() {
+      const remaining = MAX_MISTAKES - puzzleMistakes;
+      let hearts = '';
+      for (let i = 0; i < remaining; i++) hearts += '❤️';
+      for (let i = 0; i < puzzleMistakes; i++) hearts += '🖤';
+      document.getElementById('puzzle-stamina').textContent = hearts;
+    }
+
+    function renderWordSlots() {
+      const current = PUZZLE_WORDS[puzzleIndex];
+      const container = document.getElementById('puzzle-word-slots');
+      container.innerHTML = '';
+
+      for (let char of current.word) {
+        const slot = document.createElement('div');
+        slot.className = "w-9 h-11 sm:w-11 sm:h-13 rounded-xl border-2 flex items-center justify-center font-black text-base sm:text-xl uppercase transition-all duration-200 shadow-sm";
+
+        if (guessedLetters.has(char) || isPuzzleResolved || puzzleResults[puzzleIndex] !== null) {
+          slot.textContent = char;
+          slot.classList.add('border-indigo-600', 'bg-indigo-50', 'text-indigo-900');
+        } else {
+          slot.textContent = '';
+          slot.classList.add('border-slate-300', 'bg-slate-50', 'text-transparent');
+        }
+        container.appendChild(slot);
+      }
+    }
+
+    function renderKeyboard() {
+      const kbContainer = document.getElementById('puzzle-keyboard');
+      kbContainer.innerHTML = '';
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+      alphabet.split('').forEach(letter => {
+        const btn = document.createElement('button');
+        btn.id = `key-${letter}`;
+        btn.textContent = letter;
+        btn.className = "p-2 rounded-lg font-bold text-xs sm:text-sm bg-white border border-slate-200 text-slate-700 shadow-sm hover:border-indigo-500 hover:bg-indigo-50 active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed";
+
+        btn.onclick = () => handleLetterGuess(letter);
+        kbContainer.appendChild(btn);
+      });
+    }
+
+    function handleLetterGuess(letter) {
+      if (isPuzzleLocked || isPuzzleResolved || guessedLetters.has(letter)) return;
+
+      guessedLetters.add(letter);
+      const btn = document.getElementById(`key-${letter}`);
+      const current = PUZZLE_WORDS[puzzleIndex];
+
+      if (current.word.includes(letter)) {
+        playSound('correct');
+        if (btn) {
+          btn.disabled = true;
+          btn.className = "p-2 rounded-lg font-bold text-xs sm:text-sm bg-emerald-100 border border-emerald-300 text-emerald-800 cursor-not-allowed";
+        }
+        renderWordSlots();
+        checkPuzzleWin();
+      } else {
+        playSound('wrong');
+        puzzleMistakes++;
+        updateStaminaDisplay();
+        if (btn) {
+          btn.disabled = true;
+          btn.className = "p-2 rounded-lg font-bold text-xs sm:text-sm bg-rose-50 border border-rose-200 text-rose-400 cursor-not-allowed";
+        }
+
+        if (puzzleMistakes >= MAX_MISTAKES) {
+          handlePuzzleLoss();
+        }
+      }
+    }
+
+    function checkPuzzleWin() {
+      const current = PUZZLE_WORDS[puzzleIndex];
+      const isWon = current.word.split('').every(char => guessedLetters.has(char));
+
+      if (isWon) {
+        isPuzzleResolved = true;
+        puzzleResults[puzzleIndex] = true;
+        updatePuzzleLiveStats();
+
+        playSound('correct');
+        triggerConfetti();
+
+        const pill = document.getElementById('puzzle-round-status-pill');
+        pill.textContent = "Telah Dijawab: Benar ✓ (+10 Poin)";
+        pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300";
+
+        const fb = document.getElementById('puzzle-feedback');
+        fb.className = "p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm font-bold flex items-center justify-between animate-in fade-in";
+        fb.innerHTML = `
+          <div>
+            <span>🎉 Hebat! Kata sifat yang tepat adalah: <strong>${current.word}</strong>!</span>
+            <span class="block text-xs font-medium text-emerald-700 mt-0.5">Jawaban tercatat: <strong>BENAR (+10 Poin)</strong>. Nilai Bagian 1 saat ini: <strong>${puzzleScore}/100</strong>.</span>
+          </div>
+          <button onclick="speakText('${current.word}')" class="p-2 bg-emerald-200 hover:bg-emerald-300 rounded-lg text-emerald-900 text-sm" title="Dengarkan kata">🔊</button>
+        `;
+        fb.classList.remove('hidden');
+
+        document.getElementById('puzzle-next-container').classList.remove('hidden');
+        disablePuzzleInputs();
+      }
+    }
+
+    function handlePuzzleLoss() {
+      isPuzzleResolved = true;
+      puzzleResults[puzzleIndex] = false;
+      updatePuzzleLiveStats();
+
+      playSound('wrong');
+
+      const current = PUZZLE_WORDS[puzzleIndex];
+      renderWordSlots();
+
+      const pill = document.getElementById('puzzle-round-status-pill');
+      pill.textContent = "Telah Dijawab: Salah ✗ (0 Poin)";
+      pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-rose-300";
+
+      const fb = document.getElementById('puzzle-feedback');
+      fb.className = "p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs sm:text-sm font-bold flex items-center justify-between animate-in fade-in";
+      fb.innerHTML = `
+        <div>
+          <span>💔 Staminamu habis! Kata yang benar adalah: <strong>${current.word}</strong>.</span>
+          <span class="block text-xs font-medium text-rose-700 mt-0.5">Jawaban tercatat: <strong>SALAH (0 Poin)</strong>. Ayo lanjutkan ke soal berikutnya!</span>
+        </div>
+        <button onclick="speakText('${current.word}')" class="p-2 bg-rose-200 hover:bg-rose-300 rounded-lg text-rose-900 text-sm" title="Dengarkan kata">🔊</button>
+      `;
+      fb.classList.remove('hidden');
+
+      document.getElementById('puzzle-next-container').classList.remove('hidden');
+      disablePuzzleInputs();
+    }
+
+    function disablePuzzleInputs() {
+      document.querySelectorAll('#puzzle-keyboard button').forEach(b => {
+        b.disabled = true;
+        b.classList.add('opacity-40', 'cursor-not-allowed');
+      });
+    }
+
+    function nextWordPuzzle() {
+      if (isPuzzleLocked) return;
+
+      // Find next unanswered puzzle or advance
+      let nextIdx = (puzzleIndex + 1) % PUZZLE_WORDS.length;
+      puzzleIndex = nextIdx;
+      loadWordPuzzle();
+    }
+
+    // Physical Keyboard listener
+    document.addEventListener('keydown', (e) => {
+      if (isPuzzleLocked) return;
+      const activeTab = document.getElementById('tab-game');
+      const isWordMode = !document.getElementById('game-mode-wordguess').classList.contains('hidden');
+      if (activeTab && !activeTab.classList.contains('hidden') && isWordMode && !isPuzzleResolved) {
+        const letter = e.key.toUpperCase();
+        if (/^[A-Z]$/.test(letter)) {
+          handleLetterGuess(letter);
+        }
+      }
+    });
+
+    // Finalize & Lock Bagian 1 Puzzle (Max: 100)
+    function finalizePuzzleSubmission() {
+      if (isPuzzleLocked) {
+        showToast('Bagian 1 (Mystery Word Puzzle) sudah dikunci!', '🔒');
+        return;
+      }
+
+      if (!currentStudent.name || !currentStudent.studentClass) {
+        showToast('Harap isi identitas nama dan kelas terlebih dahulu.', '⚠️');
+        openStudentModal();
+        return;
+      }
+
+      const answeredCount = puzzleResults.filter(r => r !== null).length;
+      if (answeredCount < PUZZLE_WORDS.length) {
+        const unanswered = PUZZLE_WORDS.length - answeredCount;
+        if (!confirm(`Anda baru menyelesaikan ${answeredCount} dari 10 soal puzzle. ${unanswered} soal yang belum dikerjakan akan dihitung SALAH (0 poin). Kunci nilai Bagian 1 sekarang?`)) {
+          return;
+        }
+        for (let i = 0; i < puzzleResults.length; i++) {
+          if (puzzleResults[i] === null) {
+            puzzleResults[i] = false;
+          }
+        }
+        updatePuzzleLiveStats();
+      }
+
+      const correctCount = puzzleResults.filter(r => r === true).length;
+      const wrongCount = PUZZLE_WORDS.length - correctCount;
+      // Rumus murni skala 100: (correct / 10) * 100
+      const totalGrade = Math.round((correctCount / PUZZLE_WORDS.length) * 100);
+
+      const dateStr = new Date().toLocaleString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const puzzleData = {
+        studentName: currentStudent.name,
+        studentClass: currentStudent.studentClass,
+        correctCount: correctCount,
+        wrongCount: wrongCount,
+        totalGrade: totalGrade,
+        completedAt: dateStr
+      };
+
+      lastPuzzleData = puzzleData;
+      localStorage.setItem(getStorageKey('puzzle'), JSON.stringify(puzzleData));
+      applyPuzzleLock(puzzleData);
+
+      // Post to Spreadsheet (Max: 100)
+      const payload = {
+        activityType: "Mini Game - Bagian 1 (Mystery Word Puzzle)",
+        studentName: currentStudent.name,
+        studentClass: `Kelas ${currentStudent.studentClass}`,
+        finalScore: `${totalGrade} / 100`,
+        details: `Benar: ${correctCount}/10 kata, Salah: ${wrongCount}/10 kata`,
+        remarks: totalGrade >= 70 ? "Lulus Kompeten (Tebak Kata)" : "Perlu Remedial",
+        completedAt: dateStr
+      };
+      postDataToSpreadsheet(payload, 'puzzle-sync-status', 'puzzle-sync-icon', 'puzzle-sync-text', 'puzzle-btn-resync');
+
+      playSound('correct');
+      triggerConfetti();
+      showToast(`Bagian 1 Terkunci! Nilai: ${totalGrade}/100 (${correctCount} Benar, ${wrongCount} Salah)`, '🏆');
+    }
+
+    function applyPuzzleLock(data) {
+      isPuzzleLocked = true;
+      lastPuzzleData = data;
+
+      disablePuzzleInputs();
+      const nextBtn = document.getElementById('btn-next-puzzle');
+      if (nextBtn) nextBtn.disabled = true;
+
+      // Update Header Indicator
+      document.getElementById('tab-badge-puzzle-locked').classList.remove('hidden');
+
+      // Hide submission bar
+      const subBar = document.getElementById('puzzle-submission-bar');
+      if (subBar) subBar.classList.add('hidden');
+
+      // Display official result card
+      const card = document.getElementById('puzzle-result-card');
+      if (card) {
+        card.classList.remove('hidden');
+        document.getElementById('puzzle-completion-time').textContent = data.completedAt || '';
+        document.getElementById('puzzle-total-grade').textContent = data.totalGrade;
+        document.getElementById('puzzle-student-name').textContent = data.studentName;
+        document.getElementById('puzzle-student-class').textContent = `Kelas ${data.studentClass}`;
+        document.getElementById('puzzle-result-correct').textContent = `${data.correctCount} Kata`;
+        document.getElementById('puzzle-result-wrong').textContent = `${data.wrongCount} Kata`;
+        document.getElementById('puzzle-result-status').textContent = data.totalGrade >= 70 ? "Lulus Kompeten ⭐" : "Perlu Remedial 📖";
+      }
+    }
+
+    // ==================== LOGIKA BAGIAN 2: BLITZ ====================
+    function updateBlitzLiveStats() {
+      const correct = blitzResults.filter(r => r === true).length;
+      const wrong = blitzResults.filter(r => r === false).length;
+      const answered = correct + wrong;
+      const remaining = BLITZ_QUESTIONS.length - answered;
+
+      document.getElementById('blitz-live-correct').textContent = correct;
+      document.getElementById('blitz-live-wrong').textContent = wrong;
+      document.getElementById('blitz-live-remaining').textContent = remaining;
+      document.getElementById('blitz-progress-text').textContent = `${answered} / ${BLITZ_QUESTIONS.length} Soal Dijawab`;
+
+      const pct = (answered / BLITZ_QUESTIONS.length) * 100;
+      document.getElementById('blitz-progress-bar').style.width = `${pct}%`;
+
+      updateGameHeader();
+    }
+
+    function toggleBlitzTranslation() {
+      playSound('click');
+      const box = document.getElementById('blitz-translation-box');
+      const label = document.getElementById('blitz-trans-btn-label');
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        label.textContent = "Tutup Terjemahan";
+      } else {
+        box.classList.add('hidden');
+        label.textContent = "Bantuan Terjemahan";
+      }
+    }
+
+    function loadBlitzQuestion() {
+      if (blitzIndex >= BLITZ_QUESTIONS.length) {
+        blitzIndex = 0;
+      }
+      const q = BLITZ_QUESTIONS[blitzIndex];
+      if (!q) return;
+
+      document.getElementById('blitz-counter-badge').textContent = `Soal ${blitzIndex + 1} dari ${BLITZ_QUESTIONS.length}`;
+      document.getElementById('blitz-prompt').textContent = `"${q.prompt}"`;
+      document.getElementById('blitz-prompt-translation').textContent = `"${q.prompt_id}"`;
+
+      document.getElementById('blitz-translation-box').classList.add('hidden');
+      document.getElementById('blitz-trans-btn-label').textContent = "Bantuan Terjemahan";
+
+      document.getElementById('blitz-feedback').classList.add('hidden');
+      document.getElementById('blitz-next-container').classList.add('hidden');
+
+      const optBox = document.getElementById('blitz-options');
+      optBox.innerHTML = '';
+
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "blitz-btn p-3.5 bg-white border border-slate-200 hover:border-purple-400 hover:bg-purple-50/40 rounded-xl text-left font-bold text-xs sm:text-sm text-slate-800 transition flex items-center justify-between shadow-sm";
+        const enText = typeof opt === 'object' ? opt.en : opt;
+        const idText = typeof opt === 'object' && opt.id ? ` <span class="block text-[11px] font-normal text-slate-500">${opt.id}</span>` : '';
+        btn.innerHTML = `<div><span>${enText}</span>${idText}</div> <span class="text-purple-400 text-xs">⚡</span>`;
+        btn.onclick = () => checkBlitzAnswer(enText, q.correct);
+        optBox.appendChild(btn);
+      });
+
+      if (isBlitzLocked || blitzResults[blitzIndex] !== null) {
+        document.querySelectorAll('.blitz-btn').forEach(b => {
+          b.disabled = true;
+          b.classList.add('opacity-40', 'cursor-not-allowed');
+        });
+      }
+    }
+
+    function checkBlitzAnswer(chosen, correct) {
+      if (isBlitzLocked || blitzResults[blitzIndex] !== null) return;
+
+      const isCorrect = (chosen === correct);
+      blitzResults[blitzIndex] = isCorrect;
+      updateBlitzLiveStats();
+
+      const fb = document.getElementById('blitz-feedback');
+      fb.classList.remove('hidden');
+
+      document.querySelectorAll('.blitz-btn').forEach(b => {
+        b.disabled = true;
+        if (b.innerText.includes(correct)) {
+          b.className = "blitz-btn p-3.5 bg-emerald-100 border border-emerald-300 rounded-xl text-left font-bold text-xs sm:text-sm text-emerald-900";
+        } else if (b.innerText.includes(chosen)) {
+          b.className = "blitz-btn p-3.5 bg-rose-100 border border-rose-300 rounded-xl text-left font-bold text-xs sm:text-sm text-rose-900";
+        }
+      });
+
+      if (isCorrect) {
+        playSound('correct');
+        updateGameHeader();
+        fb.className = "p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm font-bold flex justify-between items-center";
+        fb.innerHTML = `
+          <span>⚡ Tepat sekali! "${correct}" cocok untuk situasi ini. (Status: BENAR ✓, Nilai Bagian 2: ${blitzScore}/100)</span>
+          <button onclick="speakText('${correct}')" class="p-1.5 bg-emerald-200 rounded-lg text-emerald-900 text-xs">🔊</button>
+        `;
+      } else {
+        playSound('wrong');
+        updateGameHeader();
+        fb.className = "p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs sm:text-sm font-bold";
+        fb.textContent = `❌ Belum tepat. Jawaban yang benar adalah "${correct}". (Status: SALAH ✗, Nilai Bagian 2: ${blitzScore}/100)`;
+      }
+
+      document.getElementById('blitz-next-container').classList.remove('hidden');
+    }
+
+    function nextBlitzQuestion() {
+      if (isBlitzLocked) return;
+      blitzIndex = (blitzIndex + 1) % BLITZ_QUESTIONS.length;
+      loadBlitzQuestion();
+    }
+
+    // Finalize & Lock Bagian 2 Blitz (Max: 100)
+    function finalizeBlitzSubmission() {
+      if (isBlitzLocked) {
+        showToast('Bagian 2 (Trait Rapid Fire) sudah dikunci!', '🔒');
+        return;
+      }
+
+      if (!currentStudent.name || !currentStudent.studentClass) {
+        showToast('Harap isi identitas nama dan kelas terlebih dahulu.', '⚠️');
+        openStudentModal();
+        return;
+      }
+
+      const answeredCount = blitzResults.filter(r => r !== null).length;
+      if (answeredCount < BLITZ_QUESTIONS.length) {
+        const unanswered = BLITZ_QUESTIONS.length - answeredCount;
+        if (!confirm(`Anda baru menjawab ${answeredCount} dari 8 soal Rapid Fire. ${unanswered} soal yang belum dijawab akan dihitung SALAH (0 poin). Kunci nilai Bagian 2 sekarang?`)) {
+          return;
+        }
+        for (let i = 0; i < blitzResults.length; i++) {
+          if (blitzResults[i] === null) {
+            blitzResults[i] = false;
+          }
+        }
+        updateBlitzLiveStats();
+      }
+
+      const correctCount = blitzResults.filter(r => r === true).length;
+      const wrongCount = BLITZ_QUESTIONS.length - correctCount;
+      // Rumus murni skala 100: (correct / 8) * 100
+      const totalGrade = Math.round((correctCount / BLITZ_QUESTIONS.length) * 100);
+
+      const dateStr = new Date().toLocaleString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const blitzData = {
+        studentName: currentStudent.name,
+        studentClass: currentStudent.studentClass,
+        correctCount: correctCount,
+        wrongCount: wrongCount,
+        totalGrade: totalGrade,
+        completedAt: dateStr
+      };
+
+      lastBlitzData = blitzData;
+      localStorage.setItem(getStorageKey('blitz'), JSON.stringify(blitzData));
+      applyBlitzLock(blitzData);
+
+      // Post to Spreadsheet (Max: 100)
+      const payload = {
+        activityType: "Mini Game - Bagian 2 (Trait Rapid Fire)",
+        studentName: currentStudent.name,
+        studentClass: `Kelas ${currentStudent.studentClass}`,
+        finalScore: `${totalGrade} / 100`,
+        details: `Benar: ${correctCount}/8 soal, Salah: ${wrongCount}/8 soal`,
+        remarks: totalGrade >= 75 ? "Lulus Kompeten (Rapid Fire)" : "Perlu Remedial",
+        completedAt: dateStr
+      };
+      postDataToSpreadsheet(payload, 'blitz-sync-status', 'blitz-sync-icon', 'blitz-sync-text', 'blitz-btn-resync');
+
+      playSound('correct');
+      triggerConfetti();
+      showToast(`Bagian 2 Terkunci! Nilai: ${totalGrade}/100 (${correctCount} Benar, ${wrongCount} Salah)`, '🏆');
+    }
+
+    function applyBlitzLock(data) {
+      isBlitzLocked = true;
+      lastBlitzData = data;
+
+      document.querySelectorAll('.blitz-btn').forEach(b => {
+        b.disabled = true;
+        b.classList.add('opacity-40', 'cursor-not-allowed');
+      });
+      const nextBtn = document.getElementById('btn-next-blitz');
+      if (nextBtn) nextBtn.disabled = true;
+
+      // Update Header Indicator
+      document.getElementById('tab-badge-blitz-locked').classList.remove('hidden');
+
+      // Hide submission bar
+      const subBar = document.getElementById('blitz-submission-bar');
+      if (subBar) subBar.classList.add('hidden');
+
+      // Display official result card
+      const card = document.getElementById('blitz-result-card');
+      if (card) {
+        card.classList.remove('hidden');
+        document.getElementById('blitz-completion-time').textContent = data.completedAt || '';
+        document.getElementById('blitz-total-grade').textContent = data.totalGrade;
+        document.getElementById('blitz-student-name').textContent = data.studentName;
+        document.getElementById('blitz-student-class').textContent = `Kelas ${data.studentClass}`;
+        document.getElementById('blitz-result-correct').textContent = `${data.correctCount} Soal`;
+        document.getElementById('blitz-result-wrong').textContent = `${data.wrongCount} Soal`;
+        document.getElementById('blitz-result-status').textContent = data.totalGrade >= 75 ? "Lulus Kompeten ⭐" : "Perlu Remedial 📖";
+      }
+    }
+
+    // App Initialization
+    window.onload = function() {
+      initClassifier();
+      initGame();
+      switchTab('vocab');
+      openStudentModal();
+    };
+  </script>
+</body>
+</html>
