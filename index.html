@@ -923,125 +923,83 @@
           </span>
           <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Athlete Detective & Trait Blitz</h2>
           <p class="text-xs sm:text-sm text-indigo-100 mt-1 max-w-xl">
-            Tebak kata sifat misterius berdasarkan petunjuk ciri fisik & watak atlet, atau pacu kecepatan refleksmu dalam kuis kilat!
+            Tebak kata sifat misterius atlet (Bagian 1) dan pacu analisismu dalam kuis kilat (Bagian 2). Setiap bagian memiliki <strong>skala nilai maksimal murni 100</strong> dengan penguncian mandiri!
           </p>
         </div>
 
-        <!-- Score & Streak Badges -->
+        <!-- Live Score Summary Cards (Max 100 Scale) -->
         <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/20 self-stretch sm:self-auto justify-around sm:justify-start">
           <div class="text-center sm:text-right">
-            <span class="text-[10px] uppercase font-bold tracking-wider text-indigo-200 block">Total Score</span>
-            <span id="game-score" class="text-2xl font-black text-amber-300">0</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider text-indigo-200 block">Nilai Bagian 1</span>
+            <span class="text-2xl font-black text-amber-300"><span id="game-puzzle-score">0</span><span class="text-xs text-indigo-200 font-bold">/100</span></span>
           </div>
           <div class="w-px h-8 bg-white/20"></div>
           <div class="text-center sm:text-left">
-            <span class="text-[10px] uppercase font-bold tracking-wider text-indigo-200 block">Streak</span>
-            <span class="text-2xl font-black text-emerald-300 flex items-center gap-1">
-              🔥 <span id="game-streak">0</span>
-            </span>
+            <span class="text-[10px] uppercase font-bold tracking-wider text-purple-200 block">Nilai Bagian 2</span>
+            <span class="text-2xl font-black text-emerald-300"><span id="game-blitz-score">0</span><span class="text-xs text-purple-200 font-bold">/100</span></span>
           </div>
         </div>
       </div>
 
-      <!-- Mode Switcher Tabs -->
+      <!-- Mode Switcher Tabs with lock status indicator -->
       <div class="flex border-b border-slate-200 text-xs sm:text-sm font-bold gap-4">
-        <button id="mode-btn-wordguess" onclick="switchGameMode('wordguess')" class="pb-2.5 px-2 border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-1.5">
-          <span>🔤 Mode 1: Mystery Word Puzzle</span>
+        <button id="mode-btn-wordguess" onclick="switchGameMode('wordguess')" class="pb-2.5 px-2 border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-2">
+          <span>🔤 Bagian 1: Mystery Word Puzzle</span>
+          <span id="tab-badge-puzzle-locked" class="hidden text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full">🔒 Terkunci</span>
         </button>
-        <button id="mode-btn-blitz" onclick="switchGameMode('blitz')" class="pb-2.5 px-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-1.5">
-          <span>⚡ Mode 2: Trait Rapid Fire</span>
-        </button>
-      </div>
-
-      <!-- Game Finish & Lock Bar -->
-      <div id="game-finish-bar" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div>
-          <span class="text-xs font-bold text-purple-700 uppercase tracking-wide block">Penguncian Nilai Mini Game</span>
-          <p class="text-xs text-slate-500 mt-0.5">Selesaikan permainan dan kirim skor akhirmu. Kesempatan bermain dibatasi <strong>1 kali</strong>.</p>
-        </div>
-        <button onclick="finalizeGameSubmission()" id="btn-submit-game" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2">
-          <span>🔒 Kunci & Selesaikan Mini Game</span>
+        <button id="mode-btn-blitz" onclick="switchGameMode('blitz')" class="pb-2.5 px-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+          <span>⚡ Bagian 2: Trait Rapid Fire</span>
+          <span id="tab-badge-blitz-locked" class="hidden text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full">🔒 Terkunci</span>
         </button>
       </div>
 
-      <!-- Mini Game Official Assessment Result Card -->
-      <div id="game-result-card" class="hidden bg-white rounded-2xl border-2 border-purple-200 p-6 sm:p-8 shadow-xl space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
-                <span>🔒</span> Selesai & Terkunci (1x Percobaan)
-              </span>
-              <span class="text-xs text-slate-500 font-medium" id="game-completion-time">22/09/2026</span>
-            </div>
-            <h3 class="text-2xl font-black text-slate-900 mt-1">Sertifikat Hasil Penilaian Mini Game</h3>
-            <p class="text-xs text-slate-500">Skor performa tebak kata dan kuis kilat Anda telah dinilai secara resmi.</p>
-          </div>
-          <div class="px-5 py-3.5 bg-purple-50 rounded-2xl border border-purple-200 text-right shadow-sm">
-            <span class="text-[10px] uppercase font-bold text-purple-700 block tracking-wider">Total Game Points</span>
-            <span id="game-result-total-score" class="text-3xl font-black text-purple-900">0</span>
-            <span class="text-xs font-bold text-purple-600 block" id="game-result-predikat">Predikat: Hebat</span>
-          </div>
-        </div>
-
-        <!-- Details Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-            <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Identitas Siswa</span>
-            <p class="font-extrabold text-slate-800 text-sm" id="game-student-name">-</p>
-            <p class="text-purple-700 font-bold mt-0.5" id="game-student-class">-</p>
-          </div>
-          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-            <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Mode 1: Word Puzzle</span>
-            <p class="font-extrabold text-slate-800 text-sm" id="game-result-puzzle-stat">0 Kata Diselesaikan</p>
-            <p class="text-slate-500 font-medium mt-0.5">Mystery Word Detective</p>
-          </div>
-          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-            <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Mode 2: Trait Rapid Fire</span>
-            <p class="font-extrabold text-slate-800 text-sm" id="game-result-blitz-stat">0 / 8 Terjawab</p>
-            <p class="text-slate-500 font-medium mt-0.5">Speed Adjective Challenge</p>
-          </div>
-        </div>
-
-        <!-- Spreadsheet Sync Status Banner for Mini Game -->
-        <div id="game-sync-status" class="p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span id="game-sync-icon">⏳</span>
-            <span id="game-sync-text" class="text-slate-700">Menyinkronkan skor game ke Google Spreadsheet...</span>
-          </div>
-          <button onclick="resendGameToSpreadsheet()" id="game-btn-resync" class="hidden px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg text-[11px] text-slate-800 font-bold transition">
-            Kirim Ulang 🔁
-          </button>
-        </div>
-
-        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center gap-2">
-          <span>🏆</span>
-          <span>Penilaian Anda sudah tersimpan permanen. Anda tidak dapat mengulang permainan ini lagi demi kejujuran evaluasi mandiri.</span>
-        </div>
-      </div>
-
-      <!-- MODE 1: MYSTERY WORD PUZZLE -->
+      <!-- MODE 1: MYSTERY WORD PUZZLE (BAGIAN 1) -->
       <div id="game-mode-wordguess" class="space-y-6">
+        <!-- Live Counters & Progress for Puzzle -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex flex-wrap justify-between items-center text-xs font-bold text-slate-600 gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-indigo-600 font-extrabold uppercase">Progress Puzzle:</span>
+              <span id="puzzle-progress-text" class="text-slate-800 font-extrabold">0 / 10 Soal Selesai</span>
+            </div>
+            <div class="flex items-center gap-2.5 text-[11px]">
+              <span class="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                Benar: <span id="puzzle-live-correct">0</span>
+              </span>
+              <span class="text-rose-700 font-bold bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200">
+                Salah: <span id="puzzle-live-wrong">0</span>
+              </span>
+              <span class="text-indigo-700 font-bold bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+                Sisa: <span id="puzzle-live-remaining">10</span>
+              </span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div id="puzzle-progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Puzzle Main Board -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
           <div class="flex flex-wrap justify-between items-center gap-2 pb-3 border-b border-slate-100">
             <div>
-              <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Word Puzzle #<span id="puzzle-round-num">1</span> of 10</span>
-              <h3 class="text-xl font-bold text-slate-900">Tebak Kata Sifat Atlet</h3>
-              <p class="text-xs text-slate-500">Tebak huruf untuk melengkapi kata sifat. Jaga staminamu agar tidak habis!</p>
+              <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Soal #<span id="puzzle-round-num">1</span> dari 10 Ronde</span>
+              <h3 class="text-xl font-bold text-slate-900">Tebak Kata Sifat Atlet (Mystery Word)</h3>
+              <p class="text-xs text-slate-500">Tebak huruf satu per satu. Jangan biarkan staminamu (6 hati) habis!</p>
             </div>
             <div class="flex items-center gap-2">
               <span id="puzzle-category-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
                 Physical
               </span>
-              <button id="btn-reset-puzzle" onclick="resetWordPuzzle()" class="text-xs text-slate-500 hover:text-slate-800 font-semibold underline">
-                Reset Puzzle
-              </button>
+              <span id="puzzle-round-status-pill" class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200">
+                Sedang Dikerjakan
+              </span>
             </div>
           </div>
 
           <!-- Stamina / Heart Display -->
           <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="text-xs font-bold text-slate-600">Athlete Stamina:</span>
+            <span class="text-xs font-bold text-slate-600">Stamina Kesempatan Salah:</span>
             <span id="puzzle-stamina" class="text-base sm:text-lg tracking-widest">❤️❤️❤️❤️❤️❤️</span>
           </div>
 
@@ -1066,31 +1024,123 @@
 
           <!-- Virtual Keyboard -->
           <div class="space-y-2">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block text-center">Tekan tombol huruf atau gunakan keyboard fisik:</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block text-center">Tekan tombol huruf atau gunakan keyboard fisik laptop:</span>
             <div id="puzzle-keyboard" class="grid grid-cols-7 sm:grid-cols-9 md:grid-cols-13 gap-1 sm:gap-1.5 max-w-2xl mx-auto"></div>
           </div>
 
           <!-- Feedback & Next Button -->
           <div id="puzzle-feedback" class="hidden"></div>
-          <div id="puzzle-next-container" class="hidden text-right pt-2">
-            <button onclick="nextWordPuzzle()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition inline-flex items-center gap-2">
-              <span>Next Word Puzzle →</span>
+          <div id="puzzle-next-container" class="hidden flex justify-between items-center pt-2">
+            <span class="text-xs text-slate-500 font-medium" id="puzzle-next-hint">Lanjut ke kata selanjutnya...</span>
+            <button id="btn-next-puzzle" onclick="nextWordPuzzle()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition inline-flex items-center gap-2">
+              <span>Soal Berikutnya →</span>
             </button>
+          </div>
+        </div>
+
+        <!-- Lock Submission Bar for Puzzle (Bagian 1) -->
+        <div id="puzzle-submission-bar" class="p-4 bg-indigo-50 border border-indigo-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+          <div>
+            <span class="text-xs sm:text-sm font-bold text-indigo-950 block">Kunci & Kumpulkan Nilai Bagian 1 (Mystery Word Puzzle)</span>
+            <span class="text-[11px] text-slate-500 font-medium">Nilai dihitung murni: <strong>(Benar / 10) × 100</strong> (Maksimal 100 poin). Setelah dikunci, hasil tidak dapat diubah dan langsung disinkronkan ke Spreadsheet.</span>
+          </div>
+          <button id="btn-submit-puzzle" onclick="finalizePuzzleSubmission()" class="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+            <span>🔒 Kunci Nilai Bagian 1</span>
+          </button>
+        </div>
+
+        <!-- Official Assessment Result Card: Bagian 1 Puzzle -->
+        <div id="puzzle-result-card" class="hidden rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50/90 via-white to-slate-50 p-6 sm:p-7 shadow-lg space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
+                  <span>🔒</span> Terkunci (Bagian 1 Selesai)
+                </span>
+                <span class="text-xs text-slate-500 font-medium" id="puzzle-completion-time">22/09/2026</span>
+              </div>
+              <h3 class="text-xl font-black text-slate-900 mt-1">Laporan Hasil Penilaian Bagian 1: Mystery Word Puzzle</h3>
+              <p class="text-xs text-slate-500">Nilai resmi diperoleh berdasarkan ketepatan menebak 10 kosakata sifat atlet (Skala 0 - 100).</p>
+            </div>
+            <div class="px-5 py-3 bg-white rounded-xl border border-indigo-100 text-right shadow-sm">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Nilai Bagian 1</span>
+              <span id="puzzle-total-grade" class="text-3xl font-black text-indigo-600">0</span>
+              <span class="text-xs font-bold text-slate-400">/ 100</span>
+            </div>
+          </div>
+
+          <!-- Breakdown Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Identitas Siswa</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="puzzle-student-name">-</p>
+              <p class="text-indigo-600 font-bold mt-0.5" id="puzzle-student-class">-</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Hasil Jawaban</span>
+              <p class="font-extrabold text-emerald-700 text-sm"><span id="puzzle-result-correct">0</span> Benar (×10 poin)</p>
+              <p class="text-rose-600 font-bold mt-0.5"><span id="puzzle-result-wrong">0</span> Salah (Total: 10 Soal)</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Status Kriteria</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="puzzle-result-status">-</p>
+              <p class="text-indigo-700 font-medium mt-0.5">Nilai Maksimal: 100 Poin</p>
+            </div>
+          </div>
+
+          <!-- Spreadsheet Sync Status Banner for Puzzle -->
+          <div id="puzzle-sync-status" class="p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span id="puzzle-sync-icon">⏳</span>
+              <span id="puzzle-sync-text" class="text-slate-700">Menyinkronkan Bagian 1 ke Google Spreadsheet...</span>
+            </div>
+            <button onclick="resendPuzzleToSpreadsheet()" id="puzzle-btn-resync" class="hidden px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg text-[11px] text-slate-800 font-bold transition">
+              Kirim Ulang 🔁
+            </button>
+          </div>
+
+          <div class="p-3.5 bg-indigo-50/70 rounded-xl border border-indigo-200 text-indigo-900 text-xs flex items-center gap-2.5">
+            <span class="text-base">✅</span>
+            <span class="font-medium">Bagian 1 telah tersimpan permanen. Anda dapat berpindah ke <strong>Bagian 2: Trait Rapid Fire</strong> untuk mengerjakan kuis kilat!</span>
           </div>
         </div>
       </div>
 
-      <!-- MODE 2: TRAIT RAPID FIRE -->
+      <!-- MODE 2: TRAIT RAPID FIRE (BAGIAN 2) -->
       <div id="game-mode-blitz" class="hidden space-y-6">
+        <!-- Live Counters & Progress for Blitz -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex flex-wrap justify-between items-center text-xs font-bold text-slate-600 gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-purple-600 font-extrabold uppercase">Progress Rapid Fire:</span>
+              <span id="blitz-progress-text" class="text-slate-800 font-extrabold">0 / 8 Soal Dijawab</span>
+            </div>
+            <div class="flex items-center gap-2.5 text-[11px]">
+              <span class="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                Benar: <span id="blitz-live-correct">0</span>
+              </span>
+              <span class="text-rose-700 font-bold bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200">
+                Salah: <span id="blitz-live-wrong">0</span>
+              </span>
+              <span class="text-purple-700 font-bold bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200">
+                Sisa: <span id="blitz-live-remaining">8</span>
+              </span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div id="blitz-progress-bar" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
         <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
           <div class="flex justify-between items-center pb-3 border-b border-slate-100">
             <div>
-              <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Speed Adjective Challenge</span>
+              <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Speed Adjective Challenge (Bagian 2)</span>
               <h3 class="text-xl font-bold text-slate-900">Trait Rapid Fire</h3>
               <p class="text-xs text-slate-500">Pilih kata sifat bahasa Inggris yang paling pas untuk situasi atlet berikut!</p>
             </div>
             <span id="blitz-counter-badge" class="text-xs font-bold px-3 py-1 bg-purple-50 text-purple-700 rounded-full border border-purple-200">
-              Question 1 of 8
+              Soal 1 dari 8
             </span>
           </div>
 
@@ -1117,10 +1167,78 @@
 
           <!-- Feedback & Next -->
           <div id="blitz-feedback" class="hidden"></div>
-          <div id="blitz-next-container" class="hidden text-right">
-            <button onclick="nextBlitzQuestion()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition inline-flex items-center gap-2">
-              <span>Next Question →</span>
+          <div id="blitz-next-container" class="hidden flex justify-between items-center">
+            <span class="text-xs text-slate-500 font-medium" id="blitz-next-hint">Lanjut ke soal berikutnya...</span>
+            <button id="btn-next-blitz" onclick="nextBlitzQuestion()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition inline-flex items-center gap-2">
+              <span>Soal Berikutnya →</span>
             </button>
+          </div>
+        </div>
+
+        <!-- Lock Submission Bar for Blitz (Bagian 2) -->
+        <div id="blitz-submission-bar" class="p-4 bg-purple-50 border border-purple-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+          <div>
+            <span class="text-xs sm:text-sm font-bold text-purple-950 block">Kunci & Kumpulkan Nilai Bagian 2 (Trait Rapid Fire)</span>
+            <span class="text-[11px] text-slate-500 font-medium">Nilai dihitung murni: <strong>(Benar / 8) × 100</strong> (Maksimal 100 poin). Setelah dikunci, opsi dinonaktifkan dan nilai dikirim otomatis ke Spreadsheet.</span>
+          </div>
+          <button id="btn-submit-blitz" onclick="finalizeBlitzSubmission()" class="w-full sm:w-auto px-5 py-2.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+            <span>🔒 Kunci Nilai Bagian 2</span>
+          </button>
+        </div>
+
+        <!-- Official Assessment Result Card: Bagian 2 Blitz -->
+        <div id="blitz-result-card" class="hidden rounded-2xl border-2 border-purple-200 bg-gradient-to-br from-purple-50/90 via-white to-slate-50 p-6 sm:p-7 shadow-lg space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
+                  <span>🔒</span> Terkunci (Bagian 2 Selesai)
+                </span>
+                <span class="text-xs text-slate-500 font-medium" id="blitz-completion-time">22/09/2026</span>
+              </div>
+              <h3 class="text-xl font-black text-slate-900 mt-1">Laporan Hasil Penilaian Bagian 2: Trait Rapid Fire</h3>
+              <p class="text-xs text-slate-500">Nilai resmi diperoleh berdasarkan ketepatan menjawab 8 situasi karakter atlet (Skala 0 - 100).</p>
+            </div>
+            <div class="px-5 py-3 bg-white rounded-xl border border-purple-100 text-right shadow-sm">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Nilai Bagian 2</span>
+              <span id="blitz-total-grade" class="text-3xl font-black text-purple-600">0</span>
+              <span class="text-xs font-bold text-slate-400">/ 100</span>
+            </div>
+          </div>
+
+          <!-- Breakdown Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Identitas Siswa</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="blitz-student-name">-</p>
+              <p class="text-purple-600 font-bold mt-0.5" id="blitz-student-class">-</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Hasil Jawaban</span>
+              <p class="font-extrabold text-emerald-700 text-sm"><span id="blitz-result-correct">0</span> Benar (×12.5 poin)</p>
+              <p class="text-rose-600 font-bold mt-0.5"><span id="blitz-result-wrong">0</span> Salah (Total: 8 Soal)</p>
+            </div>
+            <div class="p-3 bg-white rounded-xl border border-slate-200">
+              <span class="text-slate-400 font-bold uppercase block text-[10px] mb-1">Status Kriteria</span>
+              <p class="font-extrabold text-slate-800 text-sm" id="blitz-result-status">-</p>
+              <p class="text-purple-700 font-medium mt-0.5">Nilai Maksimal: 100 Poin</p>
+            </div>
+          </div>
+
+          <!-- Spreadsheet Sync Status Banner for Blitz -->
+          <div id="blitz-sync-status" class="p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span id="blitz-sync-icon">⏳</span>
+              <span id="blitz-sync-text" class="text-slate-700">Menyinkronkan Bagian 2 ke Google Spreadsheet...</span>
+            </div>
+            <button onclick="resendBlitzToSpreadsheet()" id="blitz-btn-resync" class="hidden px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg text-[11px] text-slate-800 font-bold transition">
+              Kirim Ulang 🔁
+            </button>
+          </div>
+
+          <div class="p-3.5 bg-purple-50 rounded-xl border border-purple-200 text-purple-900 text-xs flex items-center gap-2.5">
+            <span class="text-base">🏆</span>
+            <span class="font-medium">Bagian 2 telah diselesaikan dan dikunci secara mandiri demi kejujuran penilaian kuis.</span>
           </div>
         </div>
       </div>
@@ -1242,7 +1360,8 @@
     }
 
     let lastQuizData = null;
-    let lastGameData = null;
+    let lastPuzzleData = null;
+    let lastBlitzData = null;
 
     function resendQuizToSpreadsheet() {
       if (lastQuizData) {
@@ -1259,26 +1378,40 @@
       }
     }
 
-    function resendGameToSpreadsheet() {
-      if (lastGameData) {
+    function resendPuzzleToSpreadsheet() {
+      if (lastPuzzleData) {
         const payload = {
-          activityType: "Mini Game",
-          studentName: lastGameData.studentName,
-          studentClass: `Kelas ${lastGameData.studentClass}`,
-          finalScore: `${lastGameData.totalScore} Pts`,
-          details: `Word Puzzle: ${lastGameData.puzzlesSolved} kata, Rapid Fire: ${lastGameData.blitzAnswered} soal`,
-          remarks: lastGameData.predikat,
-          completedAt: lastGameData.completedAt
+          activityType: "Mini Game - Bagian 1 (Mystery Word Puzzle)",
+          studentName: lastPuzzleData.studentName,
+          studentClass: `Kelas ${lastPuzzleData.studentClass}`,
+          finalScore: `${lastPuzzleData.totalGrade} / 100`,
+          details: `Benar: ${lastPuzzleData.correctCount}/10 kata, Salah: ${lastPuzzleData.wrongCount}/10 kata`,
+          remarks: lastPuzzleData.totalGrade >= 70 ? "Lulus Kompeten (Tebak Kata)" : "Perlu Remedial",
+          completedAt: lastPuzzleData.completedAt
         };
-        postDataToSpreadsheet(payload, 'game-sync-status', 'game-sync-icon', 'game-sync-text', 'game-btn-resync');
+        postDataToSpreadsheet(payload, 'puzzle-sync-status', 'puzzle-sync-icon', 'puzzle-sync-text', 'puzzle-btn-resync');
+      }
+    }
+
+    function resendBlitzToSpreadsheet() {
+      if (lastBlitzData) {
+        const payload = {
+          activityType: "Mini Game - Bagian 2 (Trait Rapid Fire)",
+          studentName: lastBlitzData.studentName,
+          studentClass: `Kelas ${lastBlitzData.studentClass}`,
+          finalScore: `${lastBlitzData.totalGrade} / 100`,
+          details: `Benar: ${lastBlitzData.correctCount}/8 soal, Salah: ${lastBlitzData.wrongCount}/8 soal`,
+          remarks: lastBlitzData.totalGrade >= 75 ? "Lulus Kompeten (Rapid Fire)" : "Perlu Remedial",
+          completedAt: lastBlitzData.completedAt
+        };
+        postDataToSpreadsheet(payload, 'blitz-sync-status', 'blitz-sync-icon', 'blitz-sync-text', 'blitz-btn-resync');
       }
     }
 
     // Assessment Lock State
     let isQuizLocked = false;
-    let isGameLocked = false;
-    let solvedPuzzlesCount = 0;
-    let answeredBlitzCount = 0;
+    let isPuzzleLocked = false;
+    let isBlitzLocked = false;
 
     function getStorageKey(type) {
       const cleanName = (currentStudent.name || 'guest').toLowerCase().replace(/\s+/g, '_');
@@ -1300,12 +1433,23 @@
         }
       }
 
-      // Check Game Submission
-      const savedGame = localStorage.getItem(getStorageKey('game'));
-      if (savedGame) {
+      // Check Bagian 1 Puzzle Submission
+      const savedPuzzle = localStorage.getItem(getStorageKey('puzzle'));
+      if (savedPuzzle) {
         try {
-          const gameData = JSON.parse(savedGame);
-          applyGameLock(gameData);
+          const puzzleData = JSON.parse(savedPuzzle);
+          applyPuzzleLock(puzzleData);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      // Check Bagian 2 Blitz Submission
+      const savedBlitz = localStorage.getItem(getStorageKey('blitz'));
+      if (savedBlitz) {
+        try {
+          const blitzData = JSON.parse(savedBlitz);
+          applyBlitzLock(blitzData);
         } catch (e) {
           console.error(e);
         }
@@ -1350,7 +1494,7 @@
       triggerConfetti();
       showToast(`Selamat belajar, ${currentStudent.name} (${currentStudent.studentClass})!`, '👋');
 
-      // Check if this student has already submitted Quiz or Game
+      // Check if this student has already submitted Quiz or Game parts
       checkExistingSubmissions();
     }
 
@@ -1871,16 +2015,18 @@
       }
     }
 
-    // Tab 4 Mini Game State & Data
-    let gameScore = 0;
-    let gameStreak = 0;
+    // Tab 4 Mini Game State & Data (Scale: 0 - 100)
+    let puzzleScore = 0; // max 100
+    let blitzScore = 0;  // max 100
 
+    // --- Bagian 1: Puzzle State ---
     let puzzleIndex = 0;
     let puzzleMistakes = 0;
     const MAX_MISTAKES = 6;
     let guessedLetters = new Set();
     let isPuzzleResolved = false;
 
+    // Track results per puzzle question (array of true/false/null)
     const PUZZLE_WORDS = [
       {
         word: "MUSCULAR",
@@ -1944,6 +2090,9 @@
       }
     ];
 
+    let puzzleResults = new Array(PUZZLE_WORDS.length).fill(null); // null, true, false
+
+    // --- Bagian 2: Blitz State ---
     const BLITZ_QUESTIONS = [
       {
         prompt: "An athlete who trains every single day, never skips morning drills, and puts 100% effort into each workout.",
@@ -2036,16 +2185,25 @@
     ];
 
     let blitzIndex = 0;
+    let blitzResults = new Array(BLITZ_QUESTIONS.length).fill(null); // null, true, false
 
     function initGame() {
       updateGameHeader();
       loadWordPuzzle();
       loadBlitzQuestion();
+      updatePuzzleLiveStats();
+      updateBlitzLiveStats();
     }
 
     function updateGameHeader() {
-      document.getElementById('game-score').textContent = gameScore;
-      document.getElementById('game-streak').textContent = gameStreak;
+      // Calculate current live score out of 100 based on correct count
+      const puzzleCorrect = puzzleResults.filter(r => r === true).length;
+      puzzleScore = Math.round((puzzleCorrect / PUZZLE_WORDS.length) * 100);
+      document.getElementById('game-puzzle-score').textContent = puzzleScore;
+
+      const blitzCorrect = blitzResults.filter(r => r === true).length;
+      blitzScore = Math.round((blitzCorrect / BLITZ_QUESTIONS.length) * 100);
+      document.getElementById('game-blitz-score').textContent = blitzScore;
     }
 
     function switchGameMode(mode) {
@@ -2058,14 +2216,32 @@
       if (mode === 'wordguess') {
         wordSec.classList.remove('hidden');
         blitzSec.classList.add('hidden');
-        btnWord.className = "pb-2.5 px-2 border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-1.5";
-        btnBlitz.className = "pb-2.5 px-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-1.5";
+        btnWord.className = "pb-2.5 px-2 border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-2";
+        btnBlitz.className = "pb-2.5 px-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-2";
       } else {
         wordSec.classList.add('hidden');
         blitzSec.classList.remove('hidden');
-        btnBlitz.className = "pb-2.5 px-2 border-b-2 border-purple-600 text-purple-600 transition flex items-center gap-1.5";
-        btnWord.className = "pb-2.5 px-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-1.5";
+        btnBlitz.className = "pb-2.5 px-2 border-b-2 border-purple-600 text-purple-600 transition flex items-center gap-2";
+        btnWord.className = "pb-2.5 px-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-2";
       }
+    }
+
+    // ==================== LOGIKA BAGIAN 1: PUZZLE ====================
+    function updatePuzzleLiveStats() {
+      const correct = puzzleResults.filter(r => r === true).length;
+      const wrong = puzzleResults.filter(r => r === false).length;
+      const answered = correct + wrong;
+      const remaining = PUZZLE_WORDS.length - answered;
+
+      document.getElementById('puzzle-live-correct').textContent = correct;
+      document.getElementById('puzzle-live-wrong').textContent = wrong;
+      document.getElementById('puzzle-live-remaining').textContent = remaining;
+      document.getElementById('puzzle-progress-text').textContent = `${answered} / ${PUZZLE_WORDS.length} Soal Selesai`;
+
+      const pct = (answered / PUZZLE_WORDS.length) * 100;
+      document.getElementById('puzzle-progress-bar').style.width = `${pct}%`;
+
+      updateGameHeader();
     }
 
     function togglePuzzleTranslation() {
@@ -2081,20 +2257,10 @@
       }
     }
 
-    function toggleBlitzTranslation() {
-      playSound('click');
-      const box = document.getElementById('blitz-translation-box');
-      const label = document.getElementById('blitz-trans-btn-label');
-      if (box.classList.contains('hidden')) {
-        box.classList.remove('hidden');
-        label.textContent = "Tutup Terjemahan";
-      } else {
-        box.classList.add('hidden');
-        label.textContent = "Bantuan Terjemahan";
-      }
-    }
-
     function loadWordPuzzle() {
+      if (puzzleIndex >= PUZZLE_WORDS.length) {
+        puzzleIndex = 0;
+      }
       const current = PUZZLE_WORDS[puzzleIndex];
       guessedLetters.clear();
       puzzleMistakes = 0;
@@ -2105,6 +2271,18 @@
       document.getElementById('puzzle-clue-text').textContent = `"${current.clue}"`;
       document.getElementById('puzzle-clue-translation').textContent = `"${current.clue_id}"`;
 
+      const pill = document.getElementById('puzzle-round-status-pill');
+      if (puzzleResults[puzzleIndex] === true) {
+        pill.textContent = "Telah Dijawab: Benar ✓ (+10 Poin)";
+        pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300";
+      } else if (puzzleResults[puzzleIndex] === false) {
+        pill.textContent = "Telah Dijawab: Salah ✗ (0 Poin)";
+        pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-rose-300";
+      } else {
+        pill.textContent = "Sedang Dikerjakan";
+        pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200";
+      }
+
       document.getElementById('puzzle-clue-translation-box').classList.add('hidden');
       document.getElementById('puzzle-trans-btn-label').textContent = "Bantuan Terjemahan";
 
@@ -2114,6 +2292,11 @@
       updateStaminaDisplay();
       renderWordSlots();
       renderKeyboard();
+
+      if (isPuzzleLocked || puzzleResults[puzzleIndex] !== null) {
+        isPuzzleResolved = true;
+        disablePuzzleInputs();
+      }
     }
 
     function updateStaminaDisplay() {
@@ -2133,7 +2316,7 @@
         const slot = document.createElement('div');
         slot.className = "w-9 h-11 sm:w-11 sm:h-13 rounded-xl border-2 flex items-center justify-center font-black text-base sm:text-xl uppercase transition-all duration-200 shadow-sm";
 
-        if (guessedLetters.has(char) || isPuzzleResolved) {
+        if (guessedLetters.has(char) || isPuzzleResolved || puzzleResults[puzzleIndex] !== null) {
           slot.textContent = char;
           slot.classList.add('border-indigo-600', 'bg-indigo-50', 'text-indigo-900');
         } else {
@@ -2161,7 +2344,7 @@
     }
 
     function handleLetterGuess(letter) {
-      if (isGameLocked || isPuzzleResolved || guessedLetters.has(letter)) return;
+      if (isPuzzleLocked || isPuzzleResolved || guessedLetters.has(letter)) return;
 
       guessedLetters.add(letter);
       const btn = document.getElementById(`key-${letter}`);
@@ -2196,71 +2379,80 @@
 
       if (isWon) {
         isPuzzleResolved = true;
-        solvedPuzzlesCount++;
+        puzzleResults[puzzleIndex] = true;
+        updatePuzzleLiveStats();
+
         playSound('correct');
         triggerConfetti();
-        const staminaBonus = (MAX_MISTAKES - puzzleMistakes) * 10;
-        const totalPoints = 100 + staminaBonus;
 
-        gameScore += totalPoints;
-        gameStreak++;
-        updateGameHeader();
+        const pill = document.getElementById('puzzle-round-status-pill');
+        pill.textContent = "Telah Dijawab: Benar ✓ (+10 Poin)";
+        pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300";
 
         const fb = document.getElementById('puzzle-feedback');
         fb.className = "p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm font-bold flex items-center justify-between animate-in fade-in";
         fb.innerHTML = `
           <div>
             <span>🎉 Hebat! Kata sifat yang tepat adalah: <strong>${current.word}</strong>!</span>
-            <span class="block text-xs font-medium text-emerald-700 mt-0.5">+${totalPoints} Pts (+100 base + ${staminaBonus} stamina bonus)!</span>
+            <span class="block text-xs font-medium text-emerald-700 mt-0.5">Jawaban tercatat: <strong>BENAR (+10 Poin)</strong>. Nilai Bagian 1 saat ini: <strong>${puzzleScore}/100</strong>.</span>
           </div>
           <button onclick="speakText('${current.word}')" class="p-2 bg-emerald-200 hover:bg-emerald-300 rounded-lg text-emerald-900 text-sm" title="Dengarkan kata">🔊</button>
         `;
         fb.classList.remove('hidden');
+
         document.getElementById('puzzle-next-container').classList.remove('hidden');
+        disablePuzzleInputs();
       }
     }
 
     function handlePuzzleLoss() {
       isPuzzleResolved = true;
+      puzzleResults[puzzleIndex] = false;
+      updatePuzzleLiveStats();
+
       playSound('wrong');
-      gameStreak = 0;
-      updateGameHeader();
 
       const current = PUZZLE_WORDS[puzzleIndex];
       renderWordSlots();
+
+      const pill = document.getElementById('puzzle-round-status-pill');
+      pill.textContent = "Telah Dijawab: Salah ✗ (0 Poin)";
+      pill.className = "text-xs font-bold px-2.5 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-rose-300";
 
       const fb = document.getElementById('puzzle-feedback');
       fb.className = "p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs sm:text-sm font-bold flex items-center justify-between animate-in fade-in";
       fb.innerHTML = `
         <div>
           <span>💔 Staminamu habis! Kata yang benar adalah: <strong>${current.word}</strong>.</span>
-          <span class="block text-xs font-medium text-rose-700 mt-0.5">Streak kembali ke 0. Ayo coba tebak kata berikutnya!</span>
+          <span class="block text-xs font-medium text-rose-700 mt-0.5">Jawaban tercatat: <strong>SALAH (0 Poin)</strong>. Ayo lanjutkan ke soal berikutnya!</span>
         </div>
         <button onclick="speakText('${current.word}')" class="p-2 bg-rose-200 hover:bg-rose-300 rounded-lg text-rose-900 text-sm" title="Dengarkan kata">🔊</button>
       `;
       fb.classList.remove('hidden');
+
       document.getElementById('puzzle-next-container').classList.remove('hidden');
+      disablePuzzleInputs();
+    }
+
+    function disablePuzzleInputs() {
+      document.querySelectorAll('#puzzle-keyboard button').forEach(b => {
+        b.disabled = true;
+        b.classList.add('opacity-40', 'cursor-not-allowed');
+      });
     }
 
     function nextWordPuzzle() {
-      if (isGameLocked) return;
-      puzzleIndex = (puzzleIndex + 1) % PUZZLE_WORDS.length;
+      if (isPuzzleLocked) return;
+
+      // Find next unanswered puzzle or advance
+      let nextIdx = (puzzleIndex + 1) % PUZZLE_WORDS.length;
+      puzzleIndex = nextIdx;
       loadWordPuzzle();
     }
 
-    function resetWordPuzzle() {
-      if (isGameLocked) {
-        showToast('Mini game telah dikunci!', '🔒');
-        return;
-      }
-      puzzleIndex = 0;
-      loadWordPuzzle();
-      showToast('Mystery Word Puzzle diulang dari putaran pertama!', '🔄');
-    }
-
-    // Physical Keyboard support for Word Puzzle
+    // Physical Keyboard listener
     document.addEventListener('keydown', (e) => {
-      if (isGameLocked) return;
+      if (isPuzzleLocked) return;
       const activeTab = document.getElementById('tab-game');
       const isWordMode = !document.getElementById('game-mode-wordguess').classList.contains('hidden');
       if (activeTab && !activeTab.classList.contains('hidden') && isWordMode && !isPuzzleResolved) {
@@ -2271,11 +2463,144 @@
       }
     });
 
+    // Finalize & Lock Bagian 1 Puzzle (Max: 100)
+    function finalizePuzzleSubmission() {
+      if (isPuzzleLocked) {
+        showToast('Bagian 1 (Mystery Word Puzzle) sudah dikunci!', '🔒');
+        return;
+      }
+
+      if (!currentStudent.name || !currentStudent.studentClass) {
+        showToast('Harap isi identitas nama dan kelas terlebih dahulu.', '⚠️');
+        openStudentModal();
+        return;
+      }
+
+      const answeredCount = puzzleResults.filter(r => r !== null).length;
+      if (answeredCount < PUZZLE_WORDS.length) {
+        const unanswered = PUZZLE_WORDS.length - answeredCount;
+        if (!confirm(`Anda baru menyelesaikan ${answeredCount} dari 10 soal puzzle. ${unanswered} soal yang belum dikerjakan akan dihitung SALAH (0 poin). Kunci nilai Bagian 1 sekarang?`)) {
+          return;
+        }
+        for (let i = 0; i < puzzleResults.length; i++) {
+          if (puzzleResults[i] === null) {
+            puzzleResults[i] = false;
+          }
+        }
+        updatePuzzleLiveStats();
+      }
+
+      const correctCount = puzzleResults.filter(r => r === true).length;
+      const wrongCount = PUZZLE_WORDS.length - correctCount;
+      // Rumus murni skala 100: (correct / 10) * 100
+      const totalGrade = Math.round((correctCount / PUZZLE_WORDS.length) * 100);
+
+      const dateStr = new Date().toLocaleString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const puzzleData = {
+        studentName: currentStudent.name,
+        studentClass: currentStudent.studentClass,
+        correctCount: correctCount,
+        wrongCount: wrongCount,
+        totalGrade: totalGrade,
+        completedAt: dateStr
+      };
+
+      lastPuzzleData = puzzleData;
+      localStorage.setItem(getStorageKey('puzzle'), JSON.stringify(puzzleData));
+      applyPuzzleLock(puzzleData);
+
+      // Post to Spreadsheet (Max: 100)
+      const payload = {
+        activityType: "Mini Game - Bagian 1 (Mystery Word Puzzle)",
+        studentName: currentStudent.name,
+        studentClass: `Kelas ${currentStudent.studentClass}`,
+        finalScore: `${totalGrade} / 100`,
+        details: `Benar: ${correctCount}/10 kata, Salah: ${wrongCount}/10 kata`,
+        remarks: totalGrade >= 70 ? "Lulus Kompeten (Tebak Kata)" : "Perlu Remedial",
+        completedAt: dateStr
+      };
+      postDataToSpreadsheet(payload, 'puzzle-sync-status', 'puzzle-sync-icon', 'puzzle-sync-text', 'puzzle-btn-resync');
+
+      playSound('correct');
+      triggerConfetti();
+      showToast(`Bagian 1 Terkunci! Nilai: ${totalGrade}/100 (${correctCount} Benar, ${wrongCount} Salah)`, '🏆');
+    }
+
+    function applyPuzzleLock(data) {
+      isPuzzleLocked = true;
+      lastPuzzleData = data;
+
+      disablePuzzleInputs();
+      const nextBtn = document.getElementById('btn-next-puzzle');
+      if (nextBtn) nextBtn.disabled = true;
+
+      // Update Header Indicator
+      document.getElementById('tab-badge-puzzle-locked').classList.remove('hidden');
+
+      // Hide submission bar
+      const subBar = document.getElementById('puzzle-submission-bar');
+      if (subBar) subBar.classList.add('hidden');
+
+      // Display official result card
+      const card = document.getElementById('puzzle-result-card');
+      if (card) {
+        card.classList.remove('hidden');
+        document.getElementById('puzzle-completion-time').textContent = data.completedAt || '';
+        document.getElementById('puzzle-total-grade').textContent = data.totalGrade;
+        document.getElementById('puzzle-student-name').textContent = data.studentName;
+        document.getElementById('puzzle-student-class').textContent = `Kelas ${data.studentClass}`;
+        document.getElementById('puzzle-result-correct').textContent = `${data.correctCount} Kata`;
+        document.getElementById('puzzle-result-wrong').textContent = `${data.wrongCount} Kata`;
+        document.getElementById('puzzle-result-status').textContent = data.totalGrade >= 70 ? "Lulus Kompeten ⭐" : "Perlu Remedial 📖";
+      }
+    }
+
+    // ==================== LOGIKA BAGIAN 2: BLITZ ====================
+    function updateBlitzLiveStats() {
+      const correct = blitzResults.filter(r => r === true).length;
+      const wrong = blitzResults.filter(r => r === false).length;
+      const answered = correct + wrong;
+      const remaining = BLITZ_QUESTIONS.length - answered;
+
+      document.getElementById('blitz-live-correct').textContent = correct;
+      document.getElementById('blitz-live-wrong').textContent = wrong;
+      document.getElementById('blitz-live-remaining').textContent = remaining;
+      document.getElementById('blitz-progress-text').textContent = `${answered} / ${BLITZ_QUESTIONS.length} Soal Dijawab`;
+
+      const pct = (answered / BLITZ_QUESTIONS.length) * 100;
+      document.getElementById('blitz-progress-bar').style.width = `${pct}%`;
+
+      updateGameHeader();
+    }
+
+    function toggleBlitzTranslation() {
+      playSound('click');
+      const box = document.getElementById('blitz-translation-box');
+      const label = document.getElementById('blitz-trans-btn-label');
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        label.textContent = "Tutup Terjemahan";
+      } else {
+        box.classList.add('hidden');
+        label.textContent = "Bantuan Terjemahan";
+      }
+    }
+
     function loadBlitzQuestion() {
+      if (blitzIndex >= BLITZ_QUESTIONS.length) {
+        blitzIndex = 0;
+      }
       const q = BLITZ_QUESTIONS[blitzIndex];
       if (!q) return;
 
-      document.getElementById('blitz-counter-badge').textContent = `Question ${blitzIndex + 1} of ${BLITZ_QUESTIONS.length}`;
+      document.getElementById('blitz-counter-badge').textContent = `Soal ${blitzIndex + 1} dari ${BLITZ_QUESTIONS.length}`;
       document.getElementById('blitz-prompt').textContent = `"${q.prompt}"`;
       document.getElementById('blitz-prompt-translation').textContent = `"${q.prompt_id}"`;
 
@@ -2297,11 +2622,22 @@
         btn.onclick = () => checkBlitzAnswer(enText, q.correct);
         optBox.appendChild(btn);
       });
+
+      if (isBlitzLocked || blitzResults[blitzIndex] !== null) {
+        document.querySelectorAll('.blitz-btn').forEach(b => {
+          b.disabled = true;
+          b.classList.add('opacity-40', 'cursor-not-allowed');
+        });
+      }
     }
 
     function checkBlitzAnswer(chosen, correct) {
-      if (isGameLocked) return;
-      answeredBlitzCount++;
+      if (isBlitzLocked || blitzResults[blitzIndex] !== null) return;
+
+      const isCorrect = (chosen === correct);
+      blitzResults[blitzIndex] = isCorrect;
+      updateBlitzLiveStats();
+
       const fb = document.getElementById('blitz-feedback');
       fb.classList.remove('hidden');
 
@@ -2314,37 +2650,34 @@
         }
       });
 
-      if (chosen === correct) {
+      if (isCorrect) {
         playSound('correct');
-        const bonus = 50 + (gameStreak * 10);
-        gameScore += bonus;
-        gameStreak++;
         updateGameHeader();
         fb.className = "p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm font-bold flex justify-between items-center";
         fb.innerHTML = `
-          <span>⚡ Tepat sekali! "${correct}" cocok untuk situasi ini (+${bonus} Pts)!</span>
+          <span>⚡ Tepat sekali! "${correct}" cocok untuk situasi ini. (Status: BENAR ✓, Nilai Bagian 2: ${blitzScore}/100)</span>
           <button onclick="speakText('${correct}')" class="p-1.5 bg-emerald-200 rounded-lg text-emerald-900 text-xs">🔊</button>
         `;
       } else {
         playSound('wrong');
-        gameStreak = 0;
         updateGameHeader();
         fb.className = "p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs sm:text-sm font-bold";
-        fb.textContent = `❌ Belum tepat. Jawaban yang benar adalah "${correct}".`;
+        fb.textContent = `❌ Belum tepat. Jawaban yang benar adalah "${correct}". (Status: SALAH ✗, Nilai Bagian 2: ${blitzScore}/100)`;
       }
 
       document.getElementById('blitz-next-container').classList.remove('hidden');
     }
 
     function nextBlitzQuestion() {
-      if (isGameLocked) return;
+      if (isBlitzLocked) return;
       blitzIndex = (blitzIndex + 1) % BLITZ_QUESTIONS.length;
       loadBlitzQuestion();
     }
 
-    function finalizeGameSubmission() {
-      if (isGameLocked) {
-        showToast('Mini Game sudah pernah dikumpulkan dan terkunci!', '🔒');
+    // Finalize & Lock Bagian 2 Blitz (Max: 100)
+    function finalizeBlitzSubmission() {
+      if (isBlitzLocked) {
+        showToast('Bagian 2 (Trait Rapid Fire) sudah dikunci!', '🔒');
         return;
       }
 
@@ -2354,10 +2687,24 @@
         return;
       }
 
-      let predikat = "Sangat Baik";
-      if (gameScore >= 500) predikat = "Master Athlete Detective 🌟";
-      else if (gameScore >= 250) predikat = "Hebat & Berprestasi 🥈";
-      else predikat = "Cukup Bagus 🥉";
+      const answeredCount = blitzResults.filter(r => r !== null).length;
+      if (answeredCount < BLITZ_QUESTIONS.length) {
+        const unanswered = BLITZ_QUESTIONS.length - answeredCount;
+        if (!confirm(`Anda baru menjawab ${answeredCount} dari 8 soal Rapid Fire. ${unanswered} soal yang belum dijawab akan dihitung SALAH (0 poin). Kunci nilai Bagian 2 sekarang?`)) {
+          return;
+        }
+        for (let i = 0; i < blitzResults.length; i++) {
+          if (blitzResults[i] === null) {
+            blitzResults[i] = false;
+          }
+        }
+        updateBlitzLiveStats();
+      }
+
+      const correctCount = blitzResults.filter(r => r === true).length;
+      const wrongCount = BLITZ_QUESTIONS.length - correctCount;
+      // Rumus murni skala 100: (correct / 8) * 100
+      const totalGrade = Math.round((correctCount / BLITZ_QUESTIONS.length) * 100);
 
       const dateStr = new Date().toLocaleString('id-ID', {
         day: 'numeric',
@@ -2367,48 +2714,65 @@
         minute: '2-digit'
       });
 
-      const gameData = {
+      const blitzData = {
         studentName: currentStudent.name,
         studentClass: currentStudent.studentClass,
-        totalScore: gameScore,
-        predikat: predikat,
-        puzzlesSolved: solvedPuzzlesCount,
-        blitzAnswered: answeredBlitzCount,
+        correctCount: correctCount,
+        wrongCount: wrongCount,
+        totalGrade: totalGrade,
         completedAt: dateStr
       };
 
-      lastGameData = gameData;
+      lastBlitzData = blitzData;
+      localStorage.setItem(getStorageKey('blitz'), JSON.stringify(blitzData));
+      applyBlitzLock(blitzData);
 
-      localStorage.setItem(getStorageKey('game'), JSON.stringify(gameData));
-      applyGameLock(gameData);
-
-      // Post to Spreadsheet
-      const gamePayload = {
-        activityType: "Mini Game",
+      // Post to Spreadsheet (Max: 100)
+      const payload = {
+        activityType: "Mini Game - Bagian 2 (Trait Rapid Fire)",
         studentName: currentStudent.name,
         studentClass: `Kelas ${currentStudent.studentClass}`,
-        finalScore: `${gameScore} Pts`,
-        details: `Word Puzzle: ${solvedPuzzlesCount} kata, Rapid Fire: ${answeredBlitzCount} soal`,
-        remarks: predikat,
+        finalScore: `${totalGrade} / 100`,
+        details: `Benar: ${correctCount}/8 soal, Salah: ${wrongCount}/8 soal`,
+        remarks: totalGrade >= 75 ? "Lulus Kompeten (Rapid Fire)" : "Perlu Remedial",
         completedAt: dateStr
       };
-      postDataToSpreadsheet(gamePayload, 'game-sync-status', 'game-sync-icon', 'game-sync-text', 'game-btn-resync');
+      postDataToSpreadsheet(payload, 'blitz-sync-status', 'blitz-sync-icon', 'blitz-sync-text', 'blitz-btn-resync');
 
       playSound('correct');
       triggerConfetti();
-      showToast(`Mini Game telah dikunci! Skor Akhir: ${gameScore} Pts`, '🎮');
+      showToast(`Bagian 2 Terkunci! Nilai: ${totalGrade}/100 (${correctCount} Benar, ${wrongCount} Salah)`, '🏆');
     }
 
-    function applyGameLock(gameData) {
-      isGameLocked = true;
-      lastGameData = gameData;
+    function applyBlitzLock(data) {
+      isBlitzLocked = true;
+      lastBlitzData = data;
 
-      document.querySelectorAll('#puzzle-keyboard button').forEach(b => b.disabled = true);
-      document.querySelectorAll('.blitz-btn').forEach(b => b.disabled = true);
-      const resetPuzzleBtn = document.getElementById('btn-reset-puzzle');
-      if (resetPuzzleBtn) {
-        resetPuzzleBtn.disabled = true;
-        resetPuzzleBtn.classList.add('opacity-40', 'cursor-not-allowed');
+      document.querySelectorAll('.blitz-btn').forEach(b => {
+        b.disabled = true;
+        b.classList.add('opacity-40', 'cursor-not-allowed');
+      });
+      const nextBtn = document.getElementById('btn-next-blitz');
+      if (nextBtn) nextBtn.disabled = true;
+
+      // Update Header Indicator
+      document.getElementById('tab-badge-blitz-locked').classList.remove('hidden');
+
+      // Hide submission bar
+      const subBar = document.getElementById('blitz-submission-bar');
+      if (subBar) subBar.classList.add('hidden');
+
+      // Display official result card
+      const card = document.getElementById('blitz-result-card');
+      if (card) {
+        card.classList.remove('hidden');
+        document.getElementById('blitz-completion-time').textContent = data.completedAt || '';
+        document.getElementById('blitz-total-grade').textContent = data.totalGrade;
+        document.getElementById('blitz-student-name').textContent = data.studentName;
+        document.getElementById('blitz-student-class').textContent = `Kelas ${data.studentClass}`;
+        document.getElementById('blitz-result-correct').textContent = `${data.correctCount} Soal`;
+        document.getElementById('blitz-result-wrong').textContent = `${data.wrongCount} Soal`;
+        document.getElementById('blitz-result-status').textContent = data.totalGrade >= 75 ? "Lulus Kompeten ⭐" : "Perlu Remedial 📖";
       }
     }
 
